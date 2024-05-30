@@ -1,13 +1,21 @@
+using System.Text.Json.Serialization;
 using LibraSoft.Api.Data;
+using LibraSoft.Api.Handlers;
+using LibraSoft.Core.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 
-services.AddControllers();
+services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+}); ;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+services.AddRouting(options => options.LowercaseUrls = true);
 services.AddScoped<AppDbContext>();
+services.AddTransient<IUserHandler, UserHandler>();
 
 var app = builder.Build();
 
