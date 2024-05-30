@@ -16,5 +16,17 @@ namespace LibraSoft.Core.Models
         public EUserStatus Status { get; private set; } = EUserStatus.Active;
         [NotMapped]
         public List<Rent> Rents { get; private set; } = new List<Rent>();
+
+        protected User() { }    
+        public User(string name, string email, string telephone, Address? address, string password, EUserRole role = EUserRole.Common, EUserStatus status = EUserStatus.Active)
+        {
+            Name = name;
+            Email = email;
+            Telephone = telephone;
+            Address = address;
+            Password = password;
+            Role = role;
+            Status = status;
+        }
     }
 }
