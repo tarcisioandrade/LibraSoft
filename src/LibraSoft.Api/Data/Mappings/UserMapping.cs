@@ -24,10 +24,10 @@ namespace LibraSoft.Api.Data.Mappings
             builder.OwnsOne(x => x.Address);
 
             builder.Property(x => x.Role)
-            .IsRequired(true);
+            .IsRequired(true).HasConversion<string>();
 
             builder.Property(x => x.Status)
-            .IsRequired(true);
+            .IsRequired(true).HasConversion<string>();
         }
     }
 }
