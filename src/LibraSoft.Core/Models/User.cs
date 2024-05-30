@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using LibraSoft.Core.Enums;
 using LibraSoft.Domain.ValueObjects;
 
@@ -14,6 +14,7 @@ namespace LibraSoft.Core.Models
         public string Password { get; private set; } = string.Empty;
         public EUserRole Role { get; private set; } = EUserRole.Common;
         public EUserStatus Status { get; private set; } = EUserStatus.Active;
-        public List<Rent> Rents { get; private set; } = [];
+        [NotMapped]
+        public List<Rent> Rents { get; private set; } = new List<Rent>();
     }
 }

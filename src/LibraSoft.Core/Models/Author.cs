@@ -1,4 +1,5 @@
-﻿using LibraSoft.Core.Enums;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using LibraSoft.Core.Enums;
 
 namespace LibraSoft.Core.Models
 {
@@ -9,6 +10,7 @@ namespace LibraSoft.Core.Models
         public string? Biography { get; private set; }
         public DateTime? DateBirth { get; private set; }
         public EStatus Status { get; private set; } = EStatus.Active;
-        public List<Book>? Books { get; private set; }
+        [NotMapped]
+        public List<Book> Books { get; private set; } = new List<Book>();
     }
 }

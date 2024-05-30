@@ -1,4 +1,5 @@
-﻿using LibraSoft.Core.Enums;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using LibraSoft.Core.Enums;
 
 namespace LibraSoft.Core.Models
 {
@@ -9,8 +10,10 @@ namespace LibraSoft.Core.Models
         public string Publisher { get; private set; } = string.Empty;
         public string Isbn { get; private set; } = string.Empty;
         public DateTime PublicationAt { get; private set; }
-        public List<Category> Categories { get; private set; } = [];
-        public List<Rent>? Rents { get; private set; } = [];
+        [NotMapped]
+        public List<Category> Categories { get; private set; } = new List<Category>();
+        [NotMapped]
+        public List<Rent> Rents { get; private set; } = new List<Rent>();
         public int CopiesAvailable { get; private set; }
         public EStatus Status { get; private set; }
         public Guid AuthorId { get; private set; }
