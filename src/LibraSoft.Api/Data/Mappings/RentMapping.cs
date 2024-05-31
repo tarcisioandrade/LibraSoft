@@ -17,10 +17,14 @@ namespace LibraSoft.Api.Data.Mappings
            .IsRequired(true);
 
             builder.Property(x => x.Status)
-           .IsRequired(true);
+           .IsRequired(true).HasConversion<string>(); ;
 
             builder.Property(x => x.UserId)
            .IsRequired(true);
+
+            builder.HasMany(r => r.Books).WithMany(b => b.Rents).UsingEntity<Dictionary<string, object>>("RentBook",
+                    r => r.HasOne<Book>().WithMany().HasForeignKey("BookId"),
+                    b => b.HasOne<Rent>().WithMany().HasForeignKey("RentId"));
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using LibraSoft.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LibraSoft.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531145805_UpdateModelEnumsToString")]
+    partial class UpdateModelEnumsToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace LibraSoft.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("BookCategory", b =>
-                {
-                    b.Property<Guid>("BookId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("BookId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("BookCategory");
-                });
 
             modelBuilder.Entity("LibraSoft.Core.Models.Author", b =>
                 {
@@ -95,8 +83,6 @@ namespace LibraSoft.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
-
                     b.ToTable("Books");
                 });
 
@@ -106,11 +92,16 @@ namespace LibraSoft.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("BookId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookId");
 
                     b.HasIndex("Title")
                         .IsUnique();
@@ -138,8 +129,6 @@ namespace LibraSoft.Api.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Rents");
                 });
@@ -182,56 +171,11 @@ namespace LibraSoft.Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("RentBook", b =>
-                {
-                    b.Property<Guid>("BookId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RentId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("BookId", "RentId");
-
-                    b.HasIndex("RentId");
-
-                    b.ToTable("RentBook");
-                });
-
-            modelBuilder.Entity("BookCategory", b =>
+            modelBuilder.Entity("LibraSoft.Core.Models.Category", b =>
                 {
                     b.HasOne("LibraSoft.Core.Models.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraSoft.Core.Models.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LibraSoft.Core.Models.Book", b =>
-                {
-                    b.HasOne("LibraSoft.Core.Models.Author", "Author")
-                        .WithMany("Books")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("LibraSoft.Core.Models.Rent", b =>
-                {
-                    b.HasOne("LibraSoft.Core.Models.User", "User")
-                        .WithMany("Rents")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                        .WithMany("Categories")
+                        .HasForeignKey("BookId");
                 });
 
             modelBuilder.Entity("LibraSoft.Core.Models.User", b =>
@@ -272,29 +216,9 @@ namespace LibraSoft.Api.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("RentBook", b =>
+            modelBuilder.Entity("LibraSoft.Core.Models.Book", b =>
                 {
-                    b.HasOne("LibraSoft.Core.Models.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraSoft.Core.Models.Rent", null)
-                        .WithMany()
-                        .HasForeignKey("RentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("LibraSoft.Core.Models.Author", b =>
-                {
-                    b.Navigation("Books");
-                });
-
-            modelBuilder.Entity("LibraSoft.Core.Models.User", b =>
-                {
-                    b.Navigation("Rents");
+                    b.Navigation("Categories");
                 });
 #pragma warning restore 612, 618
         }

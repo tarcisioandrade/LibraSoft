@@ -14,13 +14,15 @@ namespace LibraSoft.Api.Data.Mappings
             .IsRequired(true);
 
             builder.Property(x => x.Status)
-          .IsRequired(true);
+          .IsRequired(true).HasConversion<string>(); ;
 
             builder.Property(x => x.Biography)
           .IsRequired(false);
 
             builder.Property(x => x.DateBirth)
           .IsRequired(false);
+
+            builder.HasMany(a => a.Books).WithOne(b => b.Author).HasForeignKey(b => b.AuthorId);
         }
     }
 }
