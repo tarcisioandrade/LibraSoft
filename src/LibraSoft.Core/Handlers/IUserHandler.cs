@@ -5,6 +5,8 @@ namespace LibraSoft.Core.Handlers
 {
     public interface IUserHandler
     {
-        Task<User?> CreateAsync(CreateUserRequest request);
+        Task CreateAsync(CreateUserRequest request);
+        Task DeleteAsync(DeleteUserRequest userId);
+        Task<User?> GetByEmailAsync(GetByEmailRequest email);
     }
 }

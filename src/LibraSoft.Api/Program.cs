@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using LibraSoft.Api.Data;
+using LibraSoft.Api.Filters;
 using LibraSoft.Api.Handlers;
 using LibraSoft.Core.Handlers;
 
@@ -14,6 +15,7 @@ services.AddControllers().AddJsonOptions(options =>
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddRouting(options => options.LowercaseUrls = true);
+services.AddMvc(options => options.Filters.Add(typeof(ExceptionFilter)));
 services.AddScoped<AppDbContext>();
 services.AddTransient<IUserHandler, UserHandler>();
 

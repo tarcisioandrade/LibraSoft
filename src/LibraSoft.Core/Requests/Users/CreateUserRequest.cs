@@ -1,4 +1,5 @@
-﻿using LibraSoft.Core.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using LibraSoft.Core.Enums;
 using LibraSoft.Domain.ValueObjects;
 
 namespace LibraSoft.Core.Requests.Users
@@ -10,7 +11,5 @@ namespace LibraSoft.Core.Requests.Users
         public string Telephone { get; set; } = string.Empty;
         public Address? Address { get; set; }
         public string Password { get; set; } = string.Empty;
-        public EUserRole Role { get; set; } = EUserRole.Common;
-        public EUserStatus Status { get; set; } = EUserStatus.Active;
     }
 }
