@@ -1,9 +1,11 @@
-﻿using LibraSoft.Core.Enums;
+﻿using LibraSoft.Core.Commons;
+using LibraSoft.Core.Enums;
+using LibraSoft.Core.Models.Validations;
 using LibraSoft.Domain.ValueObjects;
 
 namespace LibraSoft.Core.Models
 {
-    public class User
+    public class User : ModelBase
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; private set; } = string.Empty;
@@ -25,6 +27,17 @@ namespace LibraSoft.Core.Models
             Password = password;
             Role = role;
             Status = status;
+
+            this.Validate();
+        }
+
+        protected override void Validate()
+        {
+            var validator = new UserValidate();
+
+            var validate = validator.Validate(this);
+
+            ThrowErrorInValidate(validate);
         }
     }
 }
