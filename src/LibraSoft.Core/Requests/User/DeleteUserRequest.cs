@@ -1,4 +1,4 @@
-﻿namespace LibraSoft.Core.Requests.Users
+﻿namespace LibraSoft.Core.Requests.User
 {
     public class DeleteUserRequest
     {

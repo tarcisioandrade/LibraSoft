@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using LibraSoft.Core.Enums;
-using LibraSoft.Domain.ValueObjects;
+﻿using LibraSoft.Domain.ValueObjects;
 
-namespace LibraSoft.Core.Requests.Users
+namespace LibraSoft.Core.Requests.User
 {
     public class CreateUserRequest
     {

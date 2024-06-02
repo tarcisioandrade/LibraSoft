@@ -4,14 +4,9 @@ namespace LibraSoft.Core.Exceptions
 {
     public class UserAlreadyExistsError : ErrorBase
     {
-        public UserAlreadyExistsError(string message)
+        public UserAlreadyExistsError()
         {
-            Errors.Add(message);
-        }
-
-        public UserAlreadyExistsError(List<string> messages)
-        {
-            Errors = messages;
+            Errors.Add("User already exists.");
         }
     }
 }
