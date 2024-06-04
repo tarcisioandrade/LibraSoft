@@ -1,7 +1,8 @@
 ﻿using LibraSoft.Api.Data;
-using LibraSoft.Core.Handlers;
+using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
-using LibraSoft.Core.Requests.Users;
+using LibraSoft.Core.Enums;
+using LibraSoft.Core.Requests.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Handlers
@@ -16,13 +17,16 @@ namespace LibraSoft.Api.Handlers
             _context = appDbContext;
         }
 
-        public async Task CreateAsync(CreateUserRequest request)
+        public async Task CreateAsync(CreateUserRequest request, bool isAdmin = false)
         {
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
             var user = new User(name: request.Name,
                                 address: request.Address,
                                 email: request.Email,
-                                password: request.Password,
-                                telephone: request.Telephone);
+                                password: passwordHash,
+                                telephone: request.Telephone,
+                                role: isAdmin ? EUserRole.Admin : EUserRole.Common);
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -30,7 +34,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task DeleteAsync(DeleteUserRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == request.Id);
+            var user = await GetByIdAsync(new GetByIdRequest { Id = request.Id});
             _context.Users.Remove(user!);
             await _context.SaveChangesAsync();
         }
@@ -39,6 +43,12 @@ namespace LibraSoft.Api.Handlers
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Email == request.Email);
 
+            return user;
+        }
+
+        public async Task<User?> GetByIdAsync(GetByIdRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == request.Id);
             return user;
         }
     }

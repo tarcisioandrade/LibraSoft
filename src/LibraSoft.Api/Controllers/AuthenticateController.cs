@@ -30,6 +30,7 @@ namespace LibraSoft.Api.Controllers
 
             return Created();
         }
+
         [HttpPost("signin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,6 +55,7 @@ namespace LibraSoft.Api.Controllers
 
             return Ok(new { tokens.access_token, tokens.refresh_token });
         }
+
         [HttpPost("refresh_token")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,6 +78,25 @@ namespace LibraSoft.Api.Controllers
             }
 
             return Ok(new { tokens.access_token, tokens.refresh_token });
+        }
+
+        [HttpPost("signup/adm")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SignupAdministrator(CreateUserRequest req, IUserHandler handler)
+        {
+            var request = new GetByEmailRequest { Email = req.Email };
+
+            var exists = await handler.GetByEmailAsync(request);
+
+            if (exists is not null)
+            {
+                return BadRequest(new UserAlreadyExistsError());
+            }
+
+            await handler.CreateAsync(req, isAdmin: true);
+
+            return Created();
         }
     }
 }
