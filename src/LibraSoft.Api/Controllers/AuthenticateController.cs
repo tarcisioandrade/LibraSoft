@@ -57,12 +57,14 @@ namespace LibraSoft.Api.Controllers
         }
 
         [HttpPost("refresh_token")]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequest req, IUserHandler handler, ITokenClaimsService tokenService)
         {
-            var emailRequest = new GetByEmailRequest { Email = User.FindFirst(ClaimTypes.Email)!.Value };
+            var principal = tokenService.GetPrincipalFromToken(req.Refresh_Token);
+
+            var emailRequest = new GetByEmailRequest { Email = principal.FindFirst(ClaimTypes.Email)!.Value };
+
             var user = await handler.GetByEmailAsync(emailRequest);
 
             if(user is null)

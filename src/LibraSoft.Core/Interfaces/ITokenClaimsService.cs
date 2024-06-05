@@ -1,4 +1,5 @@
-﻿using LibraSoft.Core.Models;
+﻿using System.Security.Claims;
+using LibraSoft.Core.Models;
 using LibraSoft.Core.Responses.User;
 
 namespace LibraSoft.Core.Interfaces
@@ -7,5 +8,6 @@ namespace LibraSoft.Core.Interfaces
     {
         UserTokensResponse GetTokens(User user);
         UserTokensResponse GetNewAccessToken(User user, string refresh_token);
+        ClaimsPrincipal GetPrincipalFromToken(string token);
     }
 }
