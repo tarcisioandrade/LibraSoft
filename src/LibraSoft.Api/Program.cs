@@ -24,6 +24,10 @@ services.AddRouting(options => options.LowercaseUrls = true);
 services.AddMvc(options => options.Filters.Add(typeof(ExceptionFilter)));
 services.AddDbContext<AppDbContext>();
 services.AddTransient<IUserHandler, UserHandler>();
+services.AddTransient<ICategoryHandler, CategoryHandler>();
+services.AddTransient<IBookHandler, BookHandler>();
+services.AddTransient<IAuthorHandler, AuthorHandler>();
+services.AddTransient<IRentHandler, RentHandler>();
 services.AddScoped<ITokenClaimsService, TokenClaimService>();
 services.AddAuthorization(options =>
 {
