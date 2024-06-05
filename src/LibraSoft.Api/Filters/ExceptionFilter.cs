@@ -30,6 +30,16 @@ namespace LibraSoft.Api.Filters
 
                 context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Result = new BadRequestObjectResult(errorResponse);
+                return;
+            }
+            if (context.Exception is HandlerError)
+            {
+                var ex = (HandlerError)context.Exception;
+
+                var errorResponse = new { ex.Errors };
+
+                context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Result = new BadRequestObjectResult(errorResponse);
             }
             else
             {
