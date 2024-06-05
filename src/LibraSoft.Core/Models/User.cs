@@ -18,7 +18,13 @@ namespace LibraSoft.Core.Models
         public IEnumerable<Rent> Rents { get; private set; } = new List<Rent>();
 
         protected User() { }    
-        public User(string name, string email, string telephone, Address? address, string password, EUserRole role = EUserRole.Common, EUserStatus status = EUserStatus.Active)
+        public User(string name,
+                    string email,
+                    string telephone,
+                    Address? address,
+                    string password,
+                    EUserRole role = EUserRole.Common,
+                    EUserStatus status = EUserStatus.Active)
         {
             Name = name;
             Email = email;
