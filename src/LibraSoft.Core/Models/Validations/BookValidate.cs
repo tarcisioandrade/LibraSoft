@@ -11,9 +11,15 @@ namespace LibraSoft.Core.Models.Validations
             RuleFor(book => book.Publisher).NotEmpty().WithMessage("Publisher is required.");
             RuleFor(book => book.Isbn).NotEmpty().WithMessage("Isbn is required.");
             RuleFor(book => book.Categories).NotEmpty().WithMessage("Category is required.");
-            RuleFor(book => book.CopiesAvailable).NotEmpty()
+            RuleFor(book => book.CopiesAvailable).NotNull()
             .WithMessage("Copies Avaliable is required.")
-            .LessThan(0).WithMessage("The value of available copies cannot be negative.");
+            .Custom((copiesAvailable, context) =>
+            {
+                if (copiesAvailable < 0)
+                {
+                    context.AddFailure("The value of available copies cannot be negative.");
+                }
+            });
             RuleFor(book => book.Status).IsInEnum().WithMessage("Incorrect book status.");
         }
     }
