@@ -48,5 +48,10 @@ namespace LibraSoft.Core.Models
 
             ThrowErrorInValidate(validate);
         }
+
+        public bool Equal(Guid id)
+        {
+            return Id.Equals(id);
+        }
     }
 }
