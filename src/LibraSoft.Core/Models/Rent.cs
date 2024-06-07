@@ -34,5 +34,10 @@ namespace LibraSoft.Core.Models
 
             ThrowErrorInValidate(validate);
         }
+
+        public int BooksRented()
+        {
+            return Books.Count();
+        }
     }
 }

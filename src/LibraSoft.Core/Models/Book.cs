@@ -6,17 +6,17 @@ namespace LibraSoft.Core.Models
 {
     public class Book : ModelBase
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string Title { get; set; } = string.Empty;
-        public string Publisher { get; set; } = string.Empty;
-        public string Isbn { get; set; } = string.Empty;
-        public DateTime PublicationAt { get; set; }
-        public IEnumerable<Category> Categories { get; set; } = new List<Category>();
-        public IEnumerable<Rent> Rents { get; set; } = new List<Rent>();
-        public int CopiesAvailable { get; set; }
-        public EStatus Status { get; set; }
-        public Guid AuthorId { get; set; }
-        public Author Author { get; set; } = null!;
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string Title { get; private set; } = string.Empty;
+        public string Publisher { get; private set; } = string.Empty;
+        public string Isbn { get; private set; } = string.Empty;
+        public DateTime PublicationAt { get; private set; }
+        public IEnumerable<Category> Categories { get; private set; } = new List<Category>();
+        public IEnumerable<Rent> Rents { get; private set; } = new List<Rent>();
+        public int CopiesAvailable { get; private set; }
+        public EStatus Status { get; private set; }
+        public Guid AuthorId { get; private set; }
+        public Author Author { get; private set; } = null!;
 
         protected Book() { }
         public Book(string title,
@@ -39,6 +39,20 @@ namespace LibraSoft.Core.Models
 
             this.Validate();
         }
+        public bool Equal(Guid id)
+        {
+            return Id.Equals(id);
+        }
+
+        public void DecreaseNumberOfCopies()
+        {
+            CopiesAvailable = CopiesAvailable - 1;
+        }
+        
+        public bool HasCopiesAvaliable()
+        {
+            return CopiesAvailable > 0;
+        }
 
         protected override void Validate()
         {
@@ -49,9 +63,5 @@ namespace LibraSoft.Core.Models
             ThrowErrorInValidate(validate);
         }
 
-        public bool Equal(Guid id)
-        {
-            return Id.Equals(id);
-        }
     }
 }
