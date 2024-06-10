@@ -37,7 +37,27 @@ namespace LibraSoft.Core.Models
             this.Validate();
         }
 
-        protected override void Validate()
+        public void Inactived()
+        {
+            this.Status = EUserStatus.Inactive;
+        }
+
+        public void Suspend()
+        {
+            this.Status = EUserStatus.Suspense;
+        }
+
+        public void Ban()
+        {
+            this.Status = EUserStatus.Banned;
+        }
+
+        public void Active()
+        {
+            this.Status = EUserStatus.Active;
+        }
+
+        public void Validate()
         {
             var validator = new UserValidate();
 

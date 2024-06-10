@@ -54,7 +54,7 @@ namespace LibraSoft.Core.Models
             return CopiesAvailable > 0;
         }
 
-        protected override void Validate()
+        public void Validate()
         {
             var validator = new BookValidate();
 

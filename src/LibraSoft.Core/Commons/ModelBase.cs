@@ -15,6 +15,5 @@ namespace LibraSoft.Core.Commons
             }
         }
 
-        protected abstract void Validate();
     }
 }

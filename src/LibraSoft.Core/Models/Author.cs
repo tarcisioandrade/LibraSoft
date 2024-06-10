@@ -25,7 +25,7 @@ namespace LibraSoft.Core.Models
             this.Validate();
         }
 
-        protected override void Validate()
+        public void Validate()
         {
             var validator = new AuthorValidate();
 
