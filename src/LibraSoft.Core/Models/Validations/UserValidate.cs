@@ -9,6 +9,7 @@ namespace LibraSoft.Core.Models.Validations
         private string EmailRegex { get; init; } = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
 
         public UserValidate() {
+            RuleFor(user => user.Name).NotEmpty().WithMessage("Name cannot be empty.");
             RuleFor(user => user.Password)
             .NotEmpty().WithMessage("Password cannot be empty.")
             .MinimumLength(6).WithMessage("Password must be at least 6 characters long.")
@@ -21,6 +22,7 @@ namespace LibraSoft.Core.Models.Validations
            .Matches(TelephoneRegex).WithMessage("Phone number must be a valid mobile number.");
             RuleFor(user => user.Status).IsInEnum().WithMessage("User status must be a valid.");
             RuleFor(user => user.Role).IsInEnum().WithMessage("User role must be a valid.");
+            // TODO: Address Validation
         }
     }
 }
