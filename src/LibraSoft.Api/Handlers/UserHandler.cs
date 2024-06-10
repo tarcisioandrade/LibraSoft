@@ -34,7 +34,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task DeleteAsync(DeleteUserRequest request)
         {
-            var user = await GetByIdAsync(new GetByIdRequest { Id = request.Id});
+            var user = await GetByIdAsync(request.Id);
             _context.Users.Remove(user!);
             await _context.SaveChangesAsync();
         }
@@ -46,10 +46,57 @@ namespace LibraSoft.Api.Handlers
             return user;
         }
 
-        public async Task<User?> GetByIdAsync(GetByIdRequest request)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == request.Id);
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
             return user;
+        }
+
+        public async Task SuspenseAsync(Guid id)
+        {
+            var user = await this.GetByIdAsync(id);
+
+            user!.Suspend();
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdateAsync(UserUpdateRequest request, Guid id)
+        {
+            var user = await this.GetByIdAsync(id);
+
+            bool updated = false;
+
+            var requestesProperties = typeof(UserUpdateRequest).GetProperties();
+
+            foreach (var property in requestesProperties)
+            {
+                var newValue = property.GetValue(request);
+
+                if (newValue != null)
+                {
+                    var userProperty = typeof(User).GetProperty(property.Name);
+                    if (userProperty != null)
+                    {
+                        var currentValue = userProperty.GetValue(user);
+
+                        if (currentValue.Equals(newValue) is false)
+                        {
+                            userProperty.SetValue(user, newValue);
+                            updated = true;
+                        }
+                    }
+                }
+            }
+
+            user.Validate();
+
+            if (updated)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return updated;
         }
     }
 }
