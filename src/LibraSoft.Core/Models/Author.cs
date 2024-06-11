@@ -25,6 +25,16 @@ namespace LibraSoft.Core.Models
             this.Validate();
         }
 
+        public bool HasBooks()
+        {
+            return Books.Any();
+        }
+
+        public void Inactive()
+        {
+            this.Status = EStatus.Inactive;
+        }
+
         public void Validate()
         {
             var validator = new AuthorValidate();

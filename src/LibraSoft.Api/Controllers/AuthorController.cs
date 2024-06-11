@@ -1,8 +1,11 @@
 ﻿using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Author;
+using LibraSoft.Core.Responses.Author;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LibraSoft.Core.Commons;
+using LibraSoft.Core;
 
 namespace LibraSoft.Api.Controllers
 {
@@ -15,7 +18,7 @@ namespace LibraSoft.Api.Controllers
 
         public AuthorController(IAuthorHandler authorHandler)
         {
-            _handler = authorHandler;   
+            _handler = authorHandler;
         }
 
         [HttpPost]
@@ -33,6 +36,67 @@ namespace LibraSoft.Api.Controllers
             await _handler.CreateAsync(req);
 
             return Created();
-        }   
+        }
+
+        [HttpDelete("{id}/delete")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Authorize("admin")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var author = await _handler.GetByIdAsync(id);
+
+            if (author is null)
+            {
+                return BadRequest(new AuthorNotFoundError());
+            }
+
+            if (author.HasBooks() is true)
+            {
+                return BadRequest(new AuthorHasBookAssociatedError());
+            }
+
+            await _handler.DeleteAsync(author);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/inactive")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Authorize("admin")]
+        public async Task<IActionResult> Inactive(Guid id)
+        {
+            var author = await _handler.GetByIdAsync(id);
+
+            if (author is null)
+            {
+                return BadRequest(new AuthorNotFoundError());
+            }
+
+            await _handler.InactiveAsync(author);
+
+            return NoContent();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAll(bool includeInactive,
+                                                string? search,
+                                                int pageNumber = Configuration.DefaultPageNumber,
+                                                int pageSize = Configuration.DefaultPageSize)
+        {
+            var request = new GetAllAuthorRequest
+            {
+                IncludeInactive = includeInactive,
+                Search = search,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var response = await _handler.GetAll(request);
+
+            return Ok(response);
+        }
     }
 }

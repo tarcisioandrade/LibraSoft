@@ -1,11 +1,19 @@
-﻿namespace LibraSoft.Core.Exceptions
+﻿using System.Xml.Linq;
+using LibraSoft.Core.Commons;
+
+namespace LibraSoft.Core.Exceptions
 {
-    public class AuthorNotFoundError : HandlerError
+    public class AuthorNotFoundError : ErrorBase
     {
 
         public AuthorNotFoundError(string name)
         {
             Errors.Add($"Author {name} do no exists.");
+        }
+
+        public AuthorNotFoundError()
+        {
+            Errors.Add("Author do no exists.");
         }
     }
 }

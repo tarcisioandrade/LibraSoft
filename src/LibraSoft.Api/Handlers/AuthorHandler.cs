@@ -1,7 +1,10 @@
 ﻿using LibraSoft.Api.Data;
+using LibraSoft.Core.Commons;
+using LibraSoft.Core.Enums;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Author;
+using LibraSoft.Core.Responses.Author;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Handlers
@@ -23,18 +26,62 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteAsync(Author author)
+        {
+            _context.Authors.Remove(author);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<PagedResponse<IEnumerable<GetAllAuthorResponse>?>> GetAll(GetAllAuthorRequest request)
+        {
+            var query = _context.Authors.Where(author => author.Status == EStatus.Active);
+
+            List<Author>? authors = [];
+
+            if (request.IncludeInactive is true)
+            {
+                query = _context.Authors;
+            }
+
+            if(request.Search is not null)
+            {
+                query = query.Where(author => EF.Functions.ILike(author.Name, $"%{request.Search}%"));
+            }
+
+            authors = await query.AsNoTracking().Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToListAsync();
+            var count = await query.CountAsync();
+
+            var data = authors.Select(author => new GetAllAuthorResponse
+            {
+                Id = author.Id,
+                Biography = author.Biography,
+                Name = author.Name,
+                Status = author.Status,
+                DateBirth = author.DateBirth
+            });
+
+            return new PagedResponse<IEnumerable<GetAllAuthorResponse>?>(data, count, request.PageNumber, request.PageSize);
+        }
+
         public async Task<Author?> GetByIdAsync(Guid id)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(author => author.Id == id);
+            var author = await _context.Authors.Include(author => author.Books).FirstOrDefaultAsync(author => author.Id == id);
 
             return author;
         }
 
         public async Task<Author?> GetByNameAsync(string name)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(author => author.Name == name);
+            var author = await _context.Authors.Include(author => author.Books).FirstOrDefaultAsync(author => author.Name == name);
 
             return author;
+        }
+
+        public async Task InactiveAsync(Author author)
+        {
+            author.Inactive();
+            await _context.SaveChangesAsync();
         }
     }
 }
