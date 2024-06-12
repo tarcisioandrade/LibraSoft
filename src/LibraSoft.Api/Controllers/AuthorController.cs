@@ -1,11 +1,11 @@
-﻿using LibraSoft.Core.Exceptions;
+﻿using LibraSoft.Core;
+using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
+using LibraSoft.Core.Commons;
 using LibraSoft.Core.Requests.Author;
 using LibraSoft.Core.Responses.Author;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LibraSoft.Core.Commons;
-using LibraSoft.Core;
 
 namespace LibraSoft.Api.Controllers
 {
@@ -81,6 +81,8 @@ namespace LibraSoft.Api.Controllers
 
         [HttpGet]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(bool includeInactive,
                                                 string? search,
                                                 int pageNumber = Configuration.DefaultPageNumber,
@@ -97,6 +99,47 @@ namespace LibraSoft.Api.Controllers
             var response = await _handler.GetAll(request);
 
             return Ok(response);
+        }
+
+        [HttpPatch("{id}")]
+        [Authorize("admin")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Update(UpdateAuthorRequest req, Guid id)
+        {
+            var author = await _handler.GetByIdAsync(id);
+
+            if (author is null)
+            {
+                return BadRequest(new AuthorNotFound());
+            }
+            await _handler.Update(req, author);
+            return NoContent();
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(AuthorResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var author = await _handler.GetByIdAsync(id);
+
+            if (author is null)
+            {
+                return BadRequest(new AuthorNotFound());
+            }
+
+            var response = new AuthorResponse
+            {
+                Id = author.Id,
+                Biography = author.Biography,
+                DateBirth = author.DateBirth,
+                Name = author.Name,
+                Status = author.Status
+            };
+
+            return Ok(new Response<AuthorResponse>(response));
         }
     }
 }

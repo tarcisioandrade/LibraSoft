@@ -33,7 +33,7 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PagedResponse<IEnumerable<GetAllAuthorResponse>?>> GetAll(GetAllAuthorRequest request)
+        public async Task<PagedResponse<IEnumerable<AuthorResponse>?>> GetAll(GetAllAuthorRequest request)
         {
             var query = _context.Authors.Where(author => author.Status == EStatus.Active);
 
@@ -52,7 +52,7 @@ namespace LibraSoft.Api.Handlers
             authors = await query.AsNoTracking().Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToListAsync();
             var count = await query.CountAsync();
 
-            var data = authors.Select(author => new GetAllAuthorResponse
+            var data = authors.Select(author => new AuthorResponse
             {
                 Id = author.Id,
                 Biography = author.Biography,
@@ -61,7 +61,7 @@ namespace LibraSoft.Api.Handlers
                 DateBirth = author.DateBirth
             });
 
-            return new PagedResponse<IEnumerable<GetAllAuthorResponse>?>(data, count, request.PageNumber, request.PageSize);
+            return new PagedResponse<IEnumerable<AuthorResponse>?>(data, count, request.PageNumber, request.PageSize);
         }
 
         public async Task<Author?> GetByIdAsync(Guid id)
@@ -82,6 +82,42 @@ namespace LibraSoft.Api.Handlers
         {
             author.Inactive();
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> Update(UpdateAuthorRequest request, Author author)
+        {
+            bool updated = false;
+
+            var requestesProperties = typeof(UpdateAuthorRequest).GetProperties();
+
+            foreach (var property in requestesProperties)
+            {
+                var newValue = property.GetValue(request);
+
+                if (newValue != null)
+                {
+                    var userProperty = typeof(Author).GetProperty(property.Name);
+                    if (userProperty != null)
+                    {
+                        var currentValue = userProperty.GetValue(author);
+
+                        if (currentValue.Equals(newValue) is false)
+                        {
+                            userProperty.SetValue(author, newValue);
+                            updated = true;
+                        }
+                    }
+                }
+            }
+
+            author.Validate();
+
+            if (updated)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return updated;
         }
     }
 }

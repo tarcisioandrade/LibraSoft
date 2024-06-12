@@ -12,6 +12,7 @@ namespace LibraSoft.Core.Interfaces
         public Task<Author?> GetByNameAsync(string name);
         public Task DeleteAsync(Author author);
         public Task InactiveAsync(Author author);
-        public Task<PagedResponse<IEnumerable<GetAllAuthorResponse>?>> GetAll(GetAllAuthorRequest request);
+        public Task<PagedResponse<IEnumerable<AuthorResponse>?>> GetAll(GetAllAuthorRequest request);
+        public Task<bool> Update(UpdateAuthorRequest request, Author author);
     }
 }

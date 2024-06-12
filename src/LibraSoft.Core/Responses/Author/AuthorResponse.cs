@@ -2,7 +2,7 @@
 
 namespace LibraSoft.Core.Responses.Author
 {
-    public class GetAllAuthorResponse 
+    public class AuthorResponse 
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
