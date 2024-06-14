@@ -3,6 +3,7 @@ using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Rent;
+using LibraSoft.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,16 +59,21 @@ namespace LibraSoft.Api.Controllers
                     }
                 }
 
-                var book = await _bookhandler.GetByIDAsync(bookReq.Id);
+                var book = await _bookhandler.GetByIdAsync(bookReq.Id);
 
                 if (book is null)
                 {
-                    throw new BookNotFoundError(bookReq.Id.ToString());
+                    return BadRequest(new BookNotFoundError(bookReq.Id));
                 }
 
                 if (book.HasCopiesAvaliable() is false)
                 {
-                    throw new NoBookCopiesAvaliable(book.Title);
+                    return BadRequest(new NoBookCopiesAvaliable(book.Title));
+                }
+
+                if (book.Status == EStatus.Inactive)
+                {
+                    return BadRequest(new BookInactiveError());
                 }
 
                 book.DecreaseNumberOfCopies();
