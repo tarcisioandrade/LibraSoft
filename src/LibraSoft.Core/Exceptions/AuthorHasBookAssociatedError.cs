@@ -12,7 +12,7 @@ namespace LibraSoft.Core.Exceptions
 
         public AuthorHasBookAssociatedError(string name)
         {
-            Errors.Add($"The author {name} has associated books, please consider inactive it.");
+            Errors.Add($"The author '{name}' has associated books, please consider inactive it.");
         }
     }
 }

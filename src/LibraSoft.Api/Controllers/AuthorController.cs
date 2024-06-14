@@ -83,8 +83,8 @@ namespace LibraSoft.Api.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll(bool includeInactive,
-                                                string? search,
+        public async Task<IActionResult> GetAll(string? search,
+                                                bool includeInactive = false,
                                                 int pageNumber = Configuration.DefaultPageNumber,
                                                 int pageSize = Configuration.DefaultPageSize)
         {

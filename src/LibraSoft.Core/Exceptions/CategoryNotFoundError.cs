@@ -1,6 +1,8 @@
-﻿namespace LibraSoft.Core.Exceptions
+﻿using LibraSoft.Core.Commons;
+
+namespace LibraSoft.Core.Exceptions
 {
-    public class CategoryNotFoundError : HandlerError
+    public class CategoryNotFoundError : ErrorBase
     {
         public CategoryNotFoundError(string name)
         {

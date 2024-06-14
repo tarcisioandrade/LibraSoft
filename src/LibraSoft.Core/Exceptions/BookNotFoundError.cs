@@ -3,7 +3,7 @@
     public class BookNotFoundError : HandlerError
     {
 
-        public BookNotFoundError(string id)
+        public BookNotFoundError(Guid id)
         {
             Errors.Add($"Book id: '{id}' do not exists.");
         }

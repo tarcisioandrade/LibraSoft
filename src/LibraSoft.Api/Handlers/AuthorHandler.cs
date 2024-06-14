@@ -64,9 +64,16 @@ namespace LibraSoft.Api.Handlers
             return new PagedResponse<IEnumerable<AuthorResponse>?>(data, count, request.PageNumber, request.PageSize);
         }
 
-        public async Task<Author?> GetByIdAsync(Guid id)
+        public async Task<Author?> GetByIdAsync(Guid id, bool asNoTracking = false)
         {
-            var author = await _context.Authors.Include(author => author.Books).FirstOrDefaultAsync(author => author.Id == id);
+            IQueryable<Author> query = _context.Authors;
+
+            if (asNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            var author = await query.Include(author => author.Books).FirstOrDefaultAsync(author => author.Id == id);
 
             return author;
         }

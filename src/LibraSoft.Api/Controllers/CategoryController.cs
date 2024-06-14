@@ -42,7 +42,7 @@ namespace LibraSoft.Api.Controllers
 
             if (categories?.Count > 0)
             {
-                var response = categories.Select(category => new GetAllCategoryResponse
+                var response = categories.Select(category => new CategoryResponse
                 {
                     Id = category.Id,
                     Title = category.Title

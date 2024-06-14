@@ -57,6 +57,16 @@ namespace LibraSoft.Core.Models
             return CopiesAvailable > 0;
         }
 
+        public bool HasRent()
+        {
+            return Rents.Any();
+        }
+
+        public void Inactive()
+        {
+            Status = EStatus.Inactive;
+        }
+
         public void Validate()
         {
             var validator = new BookValidate();

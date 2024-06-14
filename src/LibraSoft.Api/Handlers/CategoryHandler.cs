@@ -29,6 +29,20 @@ namespace LibraSoft.Api.Handlers
             return categories;
         }
 
+        public Task<Category?> GetById(Guid id, bool asNoTracking = false)
+        {
+            IQueryable<Category> query = _context.Categories;
+
+            if (asNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            var category = query.FirstOrDefaultAsync(categ => categ.Id == id);
+
+            return category;
+        }
+
         public async Task<Category?> GetByTitle(string title)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Title == title);

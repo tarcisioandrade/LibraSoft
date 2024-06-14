@@ -1,5 +1,4 @@
-﻿using System.Xml.Linq;
-using LibraSoft.Core.Commons;
+﻿using LibraSoft.Core.Commons;
 
 namespace LibraSoft.Core.Exceptions
 {

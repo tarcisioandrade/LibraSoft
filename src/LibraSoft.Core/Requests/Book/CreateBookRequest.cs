@@ -4,6 +4,7 @@ namespace LibraSoft.Core.Requests.Book
     public class CreateBookRequest
     {
         public string Title { get; set; } = string.Empty;
+        public string? Image {  get; set; }
         public string Publisher { get; set; } = string.Empty;
         public string Isbn { get; set; } = string.Empty;
         public DateTime PublicationAt { get; set; }
