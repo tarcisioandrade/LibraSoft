@@ -16,7 +16,7 @@ namespace LibraSoft.Api.Data.Mappings
             builder.HasIndex(u => u.Name).IsUnique();
 
             builder.Property(x => x.Status)
-          .IsRequired(true).HasConversion<string>(); ;
+          .IsRequired(true).HasConversion<string>();
 
             builder.Property(x => x.Biography)
           .IsRequired(false);
