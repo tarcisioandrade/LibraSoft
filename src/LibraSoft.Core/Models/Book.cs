@@ -8,6 +8,7 @@ namespace LibraSoft.Core.Models
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public string Title { get; private set; } = string.Empty;
+        public string? Image { get; private set; }
         public string Publisher { get; private set; } = string.Empty;
         public string Isbn { get; private set; } = string.Empty;
         public DateTime PublicationAt { get; private set; }
@@ -26,7 +27,8 @@ namespace LibraSoft.Core.Models
                     IEnumerable<Category> categories,
                     int copiesAvailable,
                     Guid authorId,
-                    EStatus status = EStatus.Active)
+                    EStatus status = EStatus.Active,
+                    string? image = null)
         {
             Title = title;
             Publisher = publisher;
@@ -36,6 +38,7 @@ namespace LibraSoft.Core.Models
             Status = status;
             AuthorId = authorId;
             CopiesAvailable = copiesAvailable;
+            Image = image;
 
             this.Validate();
         }
