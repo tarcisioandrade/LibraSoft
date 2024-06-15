@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LibraSoft.Api.Data.Mappings
+namespace LibraSoft.Api.Database.Mappings
 {
     public class BookMapping : IEntityTypeConfiguration<Book>
     {

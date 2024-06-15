@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using LibraSoft.Api.Data.Mappings;
+using LibraSoft.Api.Database.Mappings;
 using LibraSoft.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibraSoft.Api.Data
+namespace LibraSoft.Api.Database
 {
     public class AppDbContext : DbContext
     {
