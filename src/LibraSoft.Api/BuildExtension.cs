@@ -19,6 +19,11 @@ namespace LibraSoft.Api
             builder.Services.AddDbContext<AppDbContext>();
         }
 
+        public static void AddCache(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddDistributedMemoryCache();
+        }
+
         public static void AddConfiguration(this WebApplicationBuilder builder)
         {
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
@@ -41,6 +46,7 @@ namespace LibraSoft.Api
             builder.Services.AddTransient<IAuthorHandler, AuthorHandler>();
             builder.Services.AddTransient<IRentHandler, RentHandler>();
             builder.Services.AddScoped<ITokenClaimsService, TokenClaimService>();
+            builder.Services.AddScoped<ICacheService, DistributedCacheService>();
         }
 
         public static void AddDocumentation(this WebApplicationBuilder builder)

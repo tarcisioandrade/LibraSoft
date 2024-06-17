@@ -8,6 +8,7 @@ builder.AddFilters();
 builder.AddDatabaseContext();
 builder.AddServices();
 builder.AddAuthBuilderConfiguration();
+builder.AddCache();
 
 var app = builder.Build();
 
