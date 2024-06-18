@@ -6,8 +6,11 @@ using LibraSoft.Api.Database;
 using LibraSoft.Api.Filters;
 using LibraSoft.Api.Handlers;
 using LibraSoft.Api.Services;
+using LibraSoft.Api.Services.EmailService;
 using LibraSoft.Core.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LibraSoft.Api
@@ -31,6 +34,8 @@ namespace LibraSoft.Api
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+            builder.Services.TryAddSingleton<IValidateOptions<EmailSettings>, EmailSettingsValidation>();
+            builder.Services.AddOptions<EmailSettings>().BindConfiguration("EmailSettings").ValidateOnStart();
         }
 
         public static void AddFilters(this WebApplicationBuilder builder)
@@ -47,6 +52,7 @@ namespace LibraSoft.Api
             builder.Services.AddTransient<IRentHandler, RentHandler>();
             builder.Services.AddScoped<ITokenClaimsService, TokenClaimService>();
             builder.Services.AddScoped<ICacheService, DistributedCacheService>();
+            builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
         }
 
         public static void AddDocumentation(this WebApplicationBuilder builder)

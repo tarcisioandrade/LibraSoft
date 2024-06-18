@@ -3,7 +3,6 @@ using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Authenticate;
 using LibraSoft.Core.Requests.User;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraSoft.Api.Controllers
