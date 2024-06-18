@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{85C893AA-934F-4175-8C4C-9A24B8595EE7}"
+	ProjectSection(SolutionItems) = preProject
+		PROJECT.md = PROJECT.md
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraSoft.Api", "src/LibraSoft.Api\LibraSoft.Api.csproj", "{7DAFA7AC-3FC1-40C2-9490-D95A4B13E5CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraSoft.Api", "src\LibraSoft.Api\LibraSoft.Api.csproj", "{7DAFA7AC-3FC1-40C2-9490-D95A4B13E5CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraSoft.Core", "src/LibraSoft.Core\LibraSoft.Core.csproj", "{7E3D1251-3EBF-4B4A-BC0A-37DC674229A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraSoft.Core", "src\LibraSoft.Core\LibraSoft.Core.csproj", "{7E3D1251-3EBF-4B4A-BC0A-37DC674229A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
