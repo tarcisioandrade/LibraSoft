@@ -20,7 +20,7 @@ namespace LibraSoft.Api.Services
             _tagCache = tagCache;
         }
 
-        public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, DateTime? Expires = null, string? tag = null)
+        public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, string tag, DateTime ? Expires = null)
         {
             var cachedData = await _cache.GetStringAsync(key);
 
@@ -38,7 +38,7 @@ namespace LibraSoft.Api.Services
 
             if(!string.IsNullOrEmpty(tag))
             {
-#pragma warning disable CS8600
+                #pragma warning disable CS8600
                 if (!_tagCache.TryGetValue(tag, out HashSet<string> keys))
                 {
                     keys = [];
@@ -59,7 +59,7 @@ namespace LibraSoft.Api.Services
         {
             if (_tagCache.TryGetValue(tag, out HashSet<string> keys))
             {
-#pragma warning disable CS8602
+                #pragma warning disable CS8602
                 foreach (var key in keys)
                 {
                     await _cache.RemoveAsync(key);

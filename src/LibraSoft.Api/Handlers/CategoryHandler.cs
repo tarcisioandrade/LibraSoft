@@ -2,6 +2,7 @@
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Category;
+using LibraSoft.Core.Responses.Category;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Handlers
@@ -22,11 +23,17 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Category>?> GetAll()
+        public async Task<List<CategoryResponse>?> GetAll()
         {
             var categories = await _context.Categories.AsNoTracking().ToListAsync();
 
-            return categories;
+            var response = categories.Select(category => new CategoryResponse
+            {
+                Id = category.Id,
+                Title = category.Title
+            }).ToList();
+
+            return response;
         }
 
         public Task<Category?> GetById(Guid id, bool asNoTracking = false)

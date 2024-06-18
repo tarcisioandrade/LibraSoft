@@ -1,11 +1,12 @@
-﻿using LibraSoft.Core;
+﻿using LibraSoft.Api.Constants;
+using LibraSoft.Core;
 using LibraSoft.Core.Commons;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Book;
-using LibraSoft.Core.Responses.Book;
 using LibraSoft.Core.Responses.Author;
+using LibraSoft.Core.Responses.Book;
 using LibraSoft.Core.Responses.Category;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,23 +15,25 @@ namespace LibraSoft.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("admin")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class BookController : ControllerBase
     {
         private readonly IBookHandler _bookHandler;
         private readonly ICategoryHandler _categoryHandler;
         private readonly IAuthorHandler _authorHandler;
-        public BookController(IBookHandler bookHandler, ICategoryHandler categoryHandler, IAuthorHandler authorHandler)
+        private readonly ICacheService _cache;
+        public BookController(IBookHandler bookHandler, ICategoryHandler categoryHandler, IAuthorHandler authorHandler, ICacheService cache)
         {
             _bookHandler = bookHandler;
             _categoryHandler = categoryHandler;
             _authorHandler = authorHandler;
+            _cache = cache;
         }
 
         [HttpPost]
         [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(CreateBookRequest request)
         {
             var categories = new List<Category>();
@@ -62,12 +65,14 @@ namespace LibraSoft.Api.Controllers
 
             await _bookHandler.CreateAsync(request, categories, author);
 
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+
             return Created();
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(PagedResponse<IEnumerable<BookResponse>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll(string? search,
                                                 string? category,
                                                 bool includeInactive = false,
@@ -83,14 +88,22 @@ namespace LibraSoft.Api.Controllers
                 Category = category,
             };
 
-            var books = await _bookHandler.GetAllAsync(request);
+            string cacheKey = $"get-all-book-{Uri.EscapeDataString(search ?? string.Empty)}-{Uri.EscapeDataString(stringToEscape: category
+                ?? string.Empty)}-{includeInactive}-{pageNumber}-{pageSize}";
+
+            var books = await _cache.GetOrCreateAsync(cacheKey, async () =>
+            {
+                var booksFromDb = await _bookHandler.GetAllAsync(request);
+
+                return booksFromDb;
+            }, tag: CacheTagConstants.Book);
 
             return Ok(books);
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(BookResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get(Guid id)
         {
             var bookInData = await _bookHandler.GetByIdAsync(id, asNoTracking: true);
@@ -129,7 +142,6 @@ namespace LibraSoft.Api.Controllers
         [HttpDelete("{id}/delete")]
         [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(Guid id)
         {
             var book = await _bookHandler.GetByIdAsync(id);
@@ -146,13 +158,14 @@ namespace LibraSoft.Api.Controllers
 
             await _bookHandler.DeleteAsync(book);
 
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+
             return NoContent();
         }
 
         [HttpDelete("{id}/inactive")]
         [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Inactive(Guid id)
         {
             var book = await _bookHandler.GetByIdAsync(id);
@@ -163,6 +176,8 @@ namespace LibraSoft.Api.Controllers
             }
 
             await _bookHandler.InactiveAsync(book);
+
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
 
             return NoContent();
         }

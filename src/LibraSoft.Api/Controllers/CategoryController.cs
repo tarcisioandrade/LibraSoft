@@ -1,4 +1,5 @@
-﻿using LibraSoft.Core.Exceptions;
+﻿using LibraSoft.Api.Constants;
+using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Category;
 using LibraSoft.Core.Responses.Category;
@@ -10,16 +11,20 @@ namespace LibraSoft.Api.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize("admin")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class CategoryController : ControllerBase
     {
-        private ICategoryHandler _handler;
-        public CategoryController(ICategoryHandler handler)
+        private readonly ICategoryHandler _handler;
+        private readonly ICacheService _cache;
+
+        public CategoryController(ICategoryHandler handler, ICacheService cache)
         {
             _handler = handler;
+            _cache = cache;
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(CreateCategoryRequest request, ICategoryHandler handler)
             {
@@ -32,24 +37,20 @@ namespace LibraSoft.Api.Controllers
 
             await handler.CreateAsync(request);
 
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
+
             return Created();
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _handler.GetAll();
-
-            if (categories?.Count > 0)
+            var categories = await _cache.GetOrCreateAsync("get-all-category", async () =>
             {
-                var response = categories.Select(category => new CategoryResponse
-                {
-                    Id = category.Id,
-                    Title = category.Title
-                }).ToList();
-
-                return Ok(response);
-            }
+                var categoriesFromDb = await _handler.GetAll();
+                return categoriesFromDb;
+            }, tag: CacheTagConstants.Category);
 
             return Ok(categories);
         }
