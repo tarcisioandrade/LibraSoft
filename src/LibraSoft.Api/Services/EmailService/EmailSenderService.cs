@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
+using LibraSoft.Core.Requests.Email;
 using Microsoft.Extensions.Options;
 
 namespace LibraSoft.Api.Services.EmailService
@@ -15,14 +16,14 @@ namespace LibraSoft.Api.Services.EmailService
             _settings = settings.Value;
         }
 
-        public void Send(string emailTo)
+        public void Send(string emailTo, EmailMessageRequest message)
         {
             MailAddress to = new(emailTo);
             MailAddress from = new(_settings.EmailFrom);
 
             MailMessage email = new(from, to);
-            email.Subject = "Testing out email sending";
-            email.Body = "Hello all the way from the land of C#";
+            email.Subject = message.Subject;
+            email.Body = message.Body;
 
             var client = new SmtpClient(_settings.Host, _settings.Port)
             {

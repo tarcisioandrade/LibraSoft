@@ -1,7 +1,9 @@
-﻿namespace LibraSoft.Core.Interfaces
+﻿using LibraSoft.Core.Requests.Email;
+
+namespace LibraSoft.Core.Interfaces
 {
     public interface IEmailSenderService
     {
-        public void Send(string emailTo);
+        public void Send(string emailTo, EmailMessageRequest message);
     }
 }
