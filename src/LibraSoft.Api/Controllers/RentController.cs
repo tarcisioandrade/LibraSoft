@@ -11,28 +11,50 @@ namespace LibraSoft.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class RentController : ControllerBase
     {
         private readonly IRentHandler _renthandler;
         private readonly IBookHandler _bookhandler;
+        private readonly IUserHandler _userhandler;
 
-        public RentController(IRentHandler rentHandler, IBookHandler bookHandler)
+        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler)
         {
             _renthandler = rentHandler;
             _bookhandler = bookHandler;
+            _userhandler = userhandler;
         }
 
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        
         public async Task<IActionResult> Create(CreateRentRequest req)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var user = await _userhandler.GetByIdAsync(userId);
+
+            if (user!.PunishmentsDetails.Count > 0)
+            {
+                foreach (var punishment in user.PunishmentsDetails)
+                {
+                    if (punishment.Status == EStatus.Active && punishment.PunishEndDate < DateTime.UtcNow)
+                    {
+                        punishment.Inactive();
+                        user.Active();
+                    }
+                }
+            }
+
+            if (user!.Status != EUserStatus.Active)
+            {
+                return BadRequest(new UserHasPunishmentError(user.Status.ToString()));
+            }
 
             if (req.Books.Count > 5)
             {
-                return BadRequest(new RentBookLimitExceeded());
+                return BadRequest(new RentBookLimitExceededError());
             }
 
             var userRents = await _renthandler.GetRentsByUserIdAsync(userId);
@@ -41,7 +63,7 @@ namespace LibraSoft.Api.Controllers
 
             if (userRents?.Count == 5 || (booksInRents + req.Books.Count) > 5)
             {
-                return BadRequest(new RentBookLimitExceeded());
+                return BadRequest(new RentBookLimitExceededError());
             }
 
             List<Book> books = [];
@@ -68,7 +90,7 @@ namespace LibraSoft.Api.Controllers
 
                 if (book.HasCopiesAvaliable() is false)
                 {
-                    return BadRequest(new NoBookCopiesAvaliable(book.Title));
+                    return BadRequest(new NoBookCopiesAvaliableError(book.Title));
                 }
 
                 if (book.Status == EStatus.Inactive)
@@ -84,6 +106,23 @@ namespace LibraSoft.Api.Controllers
             await _renthandler.CreateAsync(userId, req, books);
 
             return Created();
+        }
+
+        [HttpPost("{id}/return")]
+        [Authorize("admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Return(Guid id)
+        {
+            var rent = await _renthandler.GetByIdAsync(id);
+
+            if (rent is null)
+            {
+                return BadRequest(new RentNotFoundError(id));
+            }
+
+            await _renthandler.ReturnRent(rent);
+
+            return NoContent();
         }
     }
 }

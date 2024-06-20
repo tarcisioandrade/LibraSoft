@@ -1,8 +1,8 @@
 ﻿namespace LibraSoft.Core.Exceptions
 {
-    public class RentBookLimitExceeded : ControllerError
+    public class RentBookLimitExceededError : ControllerError
     {
-        public RentBookLimitExceeded()
+        public RentBookLimitExceededError()
         {
             Errors.Add("Limit max (5) of rent exceeded.");
         }

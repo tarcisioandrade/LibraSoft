@@ -1,8 +1,8 @@
 ﻿namespace LibraSoft.Core.Exceptions
 {
-    public class NoBookCopiesAvaliable : ControllerError
+    public class NoBookCopiesAvaliableError : ControllerError
     {
-        public NoBookCopiesAvaliable(string name)
+        public NoBookCopiesAvaliableError(string name)
         {
             Errors.Add($"No copies of the {name} book are available");
         }
