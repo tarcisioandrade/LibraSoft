@@ -1,5 +1,6 @@
 ﻿using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.User;
+using LibraSoft.Core.ValueObjects;
 
 namespace LibraSoft.Core.Interfaces
 {
@@ -10,7 +11,7 @@ namespace LibraSoft.Core.Interfaces
         Task<User?> GetByEmailAsync(GetByEmailRequest request);
         Task<User?> GetByIdAsync(Guid id);
         Task<bool> UpdateAsync(UserUpdateRequest request, Guid id);
-        Task SuspenseAsync(Guid id);
+        Task SuspenseAsync(Guid id, PunishmentDetails punishmentDetails);
     }
 }
     

@@ -21,6 +21,13 @@ namespace LibraSoft.Api.Database.Mappings
             builder.Property(x => x.Password).IsRequired(true);
 
             builder.OwnsOne(x => x.Address);
+            builder.OwnsMany(x => x.PunishmentsDetails, a =>
+            {
+                a.WithOwner().HasForeignKey("UserId");
+                a.Property<int>("Id");
+                a.HasKey("Id");
+                a.Property(p => p.Status).HasConversion<string>();
+            });
 
             builder.Property(x => x.Role).IsRequired(true).HasConversion<string>();
 

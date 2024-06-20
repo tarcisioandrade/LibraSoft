@@ -4,6 +4,7 @@ using LibraSoft.Core.Models;
 using LibraSoft.Core.Enums;
 using LibraSoft.Core.Requests.User;
 using Microsoft.EntityFrameworkCore;
+using LibraSoft.Core.ValueObjects;
 
 namespace LibraSoft.Api.Handlers
 {
@@ -23,6 +24,7 @@ namespace LibraSoft.Api.Handlers
 
             var user = new User(name: request.Name,
                                 address: request.Address,
+                                punishmentDetails: [],
                                 email: request.Email,
                                 password: passwordHash,
                                 telephone: request.Telephone,
@@ -52,11 +54,11 @@ namespace LibraSoft.Api.Handlers
             return user;
         }
 
-        public async Task SuspenseAsync(Guid id)
+        public async Task SuspenseAsync(Guid id, PunishmentDetails punishmentDetails)
         {
             var user = await this.GetByIdAsync(id);
 
-            user!.Suspend();
+            user!.Suspend(punishmentDetails);
 
             await _context.SaveChangesAsync();
         }

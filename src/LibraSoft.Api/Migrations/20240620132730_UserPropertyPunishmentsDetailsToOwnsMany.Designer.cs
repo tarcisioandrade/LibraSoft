@@ -3,6 +3,7 @@ using System;
 using LibraSoft.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LibraSoft.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240620132730_UserPropertyPunishmentsDetailsToOwnsMany")]
+    partial class UserPropertyPunishmentsDetailsToOwnsMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,6 +256,9 @@ namespace LibraSoft.Api.Migrations
                 {
                     b.OwnsMany("LibraSoft.Core.ValueObjects.PunishmentDetails", "PunishmentsDetails", b1 =>
                         {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("integer");
@@ -265,16 +271,10 @@ namespace LibraSoft.Api.Migrations
                             b1.Property<DateTime>("PunishInitDate")
                                 .HasColumnType("timestamp with time zone");
 
-                            b1.Property<string>("Status")
-                                .IsRequired()
-                                .HasColumnType("text");
+                            b1.Property<int>("Status")
+                                .HasColumnType("integer");
 
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uuid");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("UserId");
+                            b1.HasKey("UserId", "Id");
 
                             b1.ToTable("PunishmentDetails");
 
