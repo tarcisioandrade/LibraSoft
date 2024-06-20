@@ -65,5 +65,18 @@ namespace LibraSoft.Api.Handlers
 
             return rents;
         }
+
+        public async Task<Rent?> GetByIdAsync(Guid id)
+        {
+            var rent = await _context.Rents.FirstOrDefaultAsync(rent => rent.Id == id);
+
+            return rent;
+        }
+
+        public async Task ReturnRent(Rent rent)
+        {
+            rent.Return();
+            await _context.SaveChangesAsync();
+        }
     }
 }

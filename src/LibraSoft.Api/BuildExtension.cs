@@ -1,8 +1,11 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.PostgreSql;
 using LibraSoft.Api.Constants;
 using LibraSoft.Api.Database;
+using LibraSoft.Api.Events;
 using LibraSoft.Api.Filters;
 using LibraSoft.Api.Handlers;
 using LibraSoft.Api.Services;
@@ -53,6 +56,9 @@ namespace LibraSoft.Api
             builder.Services.AddScoped<ITokenClaimsService, TokenClaimService>();
             builder.Services.AddScoped<ICacheService, DistributedCacheService>();
             builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+            // Services to Hungfire
+            builder.Services.AddScoped<CheckReturnRentEvent>();
         }
 
         public static void AddDocumentation(this WebApplicationBuilder builder)
@@ -112,6 +118,26 @@ namespace LibraSoft.Api
         {
             app.UseAuthentication();
             app.UseAuthorization();
+        }
+
+        public static void AddHangfire(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddHangfire(configuration => configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection"))));
+            builder.Services.AddHangfireServer();
+        }
+
+        public static void UseHangFireDashboard(this WebApplication app)
+        {
+            app.UseHangfireDashboard("/dashboard");
+        }
+
+        public static void AddHanfireEvents(this IServiceProvider serviceProvider)
+        {
+            GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
+            RecurringJob.AddOrUpdate<CheckReturnRentEvent>("CheckReturnRentEvent", eventObj => eventObj.ExecuteSync(), Cron.Daily);
         }
     }
 }
