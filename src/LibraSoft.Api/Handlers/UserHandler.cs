@@ -1,10 +1,9 @@
 ﻿using LibraSoft.Api.Database;
+using LibraSoft.Core.Enums;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
-using LibraSoft.Core.Enums;
 using LibraSoft.Core.Requests.User;
 using Microsoft.EntityFrameworkCore;
-using LibraSoft.Core.ValueObjects;
 
 namespace LibraSoft.Api.Handlers
 {
@@ -73,7 +72,7 @@ namespace LibraSoft.Api.Handlers
 
             foreach (var property in requestesProperties)
             {
-                var newValue = property.GetValue(request);
+               var newValue = property.GetValue(request);
 
                 if (newValue != null)
                 {
