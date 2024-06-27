@@ -1,10 +1,10 @@
 ﻿using System.Security.Claims;
+using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.User;
 using LibraSoft.Core.Responses.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LibraSoft.Core.Exceptions;
 
 namespace LibraSoft.Api.Controllers
 {
@@ -19,12 +19,12 @@ namespace LibraSoft.Api.Controllers
         }
 
 
-        [HttpPatch("{id}/suspense")]
+        [HttpPatch("{id}/inactive")]
         [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Suspense(Guid id)
+        public async Task<IActionResult> Inactive(Guid id)
         {
-            await _handler.SuspenseAsync(id);
+            await _handler.InactiveAsync(id);
             return NoContent();
         }
 

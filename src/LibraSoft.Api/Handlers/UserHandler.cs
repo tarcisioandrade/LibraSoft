@@ -54,11 +54,11 @@ namespace LibraSoft.Api.Handlers
             return user;
         }
 
-        public async Task SuspenseAsync(Guid id, PunishmentDetails punishmentDetails)
+        public async Task InactiveAsync(Guid id)
         {
             var user = await this.GetByIdAsync(id);
 
-            user!.Suspend(punishmentDetails);
+            user!.Inactive();
 
             await _context.SaveChangesAsync();
         }

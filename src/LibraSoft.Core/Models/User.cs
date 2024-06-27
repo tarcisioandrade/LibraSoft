@@ -41,7 +41,7 @@ namespace LibraSoft.Core.Models
             this.Validate();
         }
 
-        public void Inactived()
+        public void Inactive()
         {
             this.Status = EUserStatus.Inactive;
         }
