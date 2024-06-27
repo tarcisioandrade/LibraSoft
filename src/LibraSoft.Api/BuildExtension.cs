@@ -59,6 +59,7 @@ namespace LibraSoft.Api
 
             // Services to Hungfire
             builder.Services.AddScoped<CheckReturnRentEvent>();
+            builder.Services.AddScoped<CheckUserPunishmentStatus>();
         }
 
         public static void AddDocumentation(this WebApplicationBuilder builder)
@@ -138,6 +139,7 @@ namespace LibraSoft.Api
         {
             GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
             RecurringJob.AddOrUpdate<CheckReturnRentEvent>("CheckReturnRentEvent", eventObj => eventObj.ExecuteSync(), Cron.Daily);
+            RecurringJob.AddOrUpdate<CheckUserPunishmentStatus>("CheckUserPunishmentStatus", eventObj => eventObj.ExecuteSync(), Cron.Daily);
         }
     }
 }
