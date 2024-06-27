@@ -1,5 +1,4 @@
 ﻿using LibraSoft.Core.Commons;
-using LibraSoft.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -22,24 +21,15 @@ namespace LibraSoft.Api.Filters
 
         private static void HandleProjectException(ExceptionContext context)
         {
-            if (context.Exception is ModelValidateError)
+            if (context.Exception is ErrorBase)
             {
-                var ex = (ModelValidateError)context.Exception;
+                var ex = (ErrorBase)context.Exception;
 
                 var errorResponse = new { ex.Errors };
 
                 context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 context.Result = new BadRequestObjectResult(errorResponse);
                 return;
-            }
-            if (context.Exception is HandlerError)
-            {
-                var ex = (HandlerError)context.Exception;
-
-                var errorResponse = new { ex.Errors };
-
-                context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                context.Result = new BadRequestObjectResult(errorResponse);
             }
             else
             {
