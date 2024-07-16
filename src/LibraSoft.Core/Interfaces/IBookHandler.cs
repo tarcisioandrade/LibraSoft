@@ -13,5 +13,6 @@ namespace LibraSoft.Core.Interfaces
         public Task<PagedResponse<IEnumerable<BookResponse>?>> GetAllAsync(GetAllBookRequest request);
         public Task DeleteAsync(Book book);
         public Task InactiveAsync(Book book);
+        public Task UpdateBookRatingAsync(Book book);
     }   
 }
