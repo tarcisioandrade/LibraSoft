@@ -3,6 +3,7 @@ using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Authenticate;
 using LibraSoft.Core.Requests.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraSoft.Api.Controllers
@@ -62,9 +63,9 @@ namespace LibraSoft.Api.Controllers
         {
             var principal = tokenService.GetPrincipalFromToken(req.Refresh_Token);
 
-            var emailRequest = new GetByEmailRequest { Email = principal.FindFirst(ClaimTypes.Email)!.Value };
+            var id = principal.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-            var user = await handler.GetByEmailAsync(emailRequest);
+            var user = await handler.GetByIdAsync(Guid.Parse(id));
 
             if(user is null)
             {
@@ -98,6 +99,13 @@ namespace LibraSoft.Api.Controllers
             await handler.CreateAsync(req, isAdmin: true);
 
             return Created();
+        }
+
+        [HttpGet("check")]
+        [Authorize]
+        public IActionResult CheckAuthentication()
+        {
+            return Ok();
         }
     }
 }
