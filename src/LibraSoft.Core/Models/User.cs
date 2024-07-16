@@ -18,7 +18,8 @@ namespace LibraSoft.Core.Models
         public List<PunishmentDetails> PunishmentsDetails { get; private set; } = [];
         public EUserStatus Status { get; private set; } = EUserStatus.Active;
         public IEnumerable<Rent> Rents { get; private set; } = new List<Rent>();
-
+        public IEnumerable<Review> Reviews { get; private set; } = new List<Review>();
+        
         protected User() { }    
         public User(string name,
                     string email,

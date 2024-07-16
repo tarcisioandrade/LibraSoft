@@ -50,7 +50,7 @@ namespace LibraSoft.Api.Controllers
                 Telephone = user.Telephone,
                 Address = user.Address,
                 Role = user.Role,
-                UserStatus = user.Status,
+                Status = user.Status,
             };
 
             return Ok(response);

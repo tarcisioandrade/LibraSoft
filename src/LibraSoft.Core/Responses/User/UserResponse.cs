@@ -11,6 +11,6 @@ namespace LibraSoft.Core.Responses.User
         public string Telephone { get; set; } = string.Empty;
         public Address? Address { get; set; } = null;
         public EUserRole Role { get; set; }
-        public EUserStatus UserStatus { get; set; }
+        public EUserStatus Status { get; set; }
     }
 }

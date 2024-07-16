@@ -34,6 +34,7 @@ namespace LibraSoft.Api.Database.Mappings
             builder.Property(x => x.Status).IsRequired(true).HasConversion<string>();
 
             builder.HasMany(u => u.Rents).WithOne(r => r.User).HasForeignKey(u => u.UserId);
+            builder.HasMany(u => u.Reviews).WithOne(r => r.User).HasForeignKey(u => u.UserId);
         }
     }
 }
