@@ -55,6 +55,8 @@ namespace LibraSoft.Api
             builder.Services.AddTransient<IRentHandler, RentHandler>();
             builder.Services.AddScoped<ITokenClaimsService, TokenClaimService>();
             builder.Services.AddScoped<ICacheService, DistributedCacheService>();
+            builder.Services.AddScoped<IReviewHandler, ReviewHandler>();
+            builder.Services.AddScoped<ILikeHandler, LikeHandler>();
             builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 
             // Services to Hungfire
@@ -81,16 +83,16 @@ namespace LibraSoft.Api
         {
             const string CORS_POLICY = "CorsPolicy";
 
-            builder.Services.AddCors(
-                options => options.AddPolicy(
-                    CORS_POLICY,
-                    policy =>
-                    {
-                        policy.AllowAnyHeader();
-                        policy.AllowAnyMethod();
-                    }
-                        
-                ));
+            builder.Services.AddCors(option =>
+            {
+                option.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(["http://localhost:3000", "https://localhost:3000"]);
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
+                    builder.AllowCredentials();
+                });
+            });
         }
 
         public static void AddAuthBuilderConfiguration(this WebApplicationBuilder builder)
