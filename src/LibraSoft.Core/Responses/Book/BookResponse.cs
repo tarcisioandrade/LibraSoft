@@ -13,6 +13,8 @@ namespace LibraSoft.Core.Responses.Book
         public string Isbn { get; set; } = string.Empty;
         public DateTime PublicationAt { get; set; }
         public int CopiesAvaliable { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewsCount { get; set; }
         public IEnumerable<CategoryResponse> Categories { get; set; } = [];
         public required AuthorResponse Author { get; set; }
         public EStatus Status { get; set; }

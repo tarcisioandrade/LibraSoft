@@ -1,4 +1,4 @@
-﻿using LibraSoft.Core.Models;
+﻿    using LibraSoft.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,6 +29,8 @@ namespace LibraSoft.Api.Database.Mappings
             builder.HasMany(b => b.Categories).WithMany(b => b.Books).UsingEntity<Dictionary<string, object>>(
                 "BookCategory", b => b.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
                 c => c.HasOne<Book>().WithMany().HasForeignKey("BookId"));
+
+            builder.HasMany(b => b.Reviews).WithOne(b => b.Book).HasForeignKey(b => b.BookId);
         }
     }
 }

@@ -104,7 +104,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<Book?> GetByIdAsync(Guid id, bool asNoTracking = false)
         {
-            IQueryable<Book> query = _context.Books.Include(b => b.Author).Include(b => b.Categories).Include(b => b.Rents);
+            IQueryable<Book> query = _context.Books.Include(b => b.Author).Include(b => b.Categories).Include(b => b.Rents).Include(r => r.Reviews);
 
             if (asNoTracking)
             {
@@ -118,7 +118,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<Book?> GetByIsbnAsync(string isbn, bool asNoTracking = false)
         {
-            IQueryable<Book> query = _context.Books;
+            IQueryable<Book> query = _context.Books.Include(b => b.Reviews);
 
             if (asNoTracking)
             {
@@ -133,6 +133,14 @@ namespace LibraSoft.Api.Handlers
         public async Task InactiveAsync(Book book)
         {
             book.Inactive();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateBookRatingAsync(Book book)
+        {
+
+            var average = book.Reviews.Any() ? book.Reviews.Average(b => b.Rating) : 0;
+            book.SetAverage(average);
             await _context.SaveChangesAsync();
         }
     }

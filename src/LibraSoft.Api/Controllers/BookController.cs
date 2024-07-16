@@ -120,6 +120,8 @@ namespace LibraSoft.Api.Controllers
                 Image = bookInData.Image,
                 Isbn = bookInData.Isbn,
                 CopiesAvaliable = bookInData.CopiesAvailable,
+                AverageRating = bookInData.AverageRating,
+                ReviewsCount = bookInData.Reviews.Count(),
                 Publisher = bookInData.Publisher,
                 PublicationAt = bookInData.PublicationAt,
                 Author = new AuthorResponse

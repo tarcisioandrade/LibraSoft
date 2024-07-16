@@ -14,7 +14,9 @@ namespace LibraSoft.Core.Models
         public DateTime PublicationAt { get; private set; }
         public IEnumerable<Category> Categories { get; private set; } = new List<Category>();
         public IEnumerable<Rent> Rents { get; private set; } = new List<Rent>();
+        public IEnumerable<Review> Reviews { get; private set; } = new List<Review>();
         public int CopiesAvailable { get; private set; }
+        public double AverageRating { get; private set; }
         public EStatus Status { get; private set; }
         public Guid AuthorId { get; private set; }
         public Author Author { get; private set; } = null!;
@@ -65,6 +67,11 @@ namespace LibraSoft.Core.Models
         public void Inactive()
         {
             Status = EStatus.Inactive;
+        }
+
+        public void SetAverage(double average)
+        {
+            AverageRating = average;
         }
 
         public void Validate()
