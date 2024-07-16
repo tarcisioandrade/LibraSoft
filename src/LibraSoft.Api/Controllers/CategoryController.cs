@@ -10,7 +10,6 @@ namespace LibraSoft.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class CategoryController : ControllerBase
@@ -25,6 +24,7 @@ namespace LibraSoft.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(CreateCategoryRequest request, ICategoryHandler handler)
             {
