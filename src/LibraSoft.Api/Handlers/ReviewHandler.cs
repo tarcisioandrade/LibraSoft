@@ -1,7 +1,9 @@
 ﻿using LibraSoft.Api.Database;
+using LibraSoft.Core.Commons;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Review;
+using LibraSoft.Core.Responses.Review;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Handlers
@@ -41,11 +43,24 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Review>?> GetAllAsync(Guid bookId)
+        public async Task<PagedResponse<IEnumerable<ReviewResponse>?>> GetAllAsync(GetAllReviewRequest request)
         {
-            var reviews = await _context.Reviews.Include(r => r.User).Include(r => r.Likes).Where(r => r.BookId == bookId).Take(5).OrderByDescending(r => r.CreatedAt).ToListAsync();
+            var query = _context.Reviews.Include(r => r.User)
+                                                .Include(r => r.Likes)
+                                                .Where(r => r.BookId == request.BookId)
+                                                .AsNoTracking();
+            var data = await query.Skip((request.PageNumber - 1) * request.PageSize)
+                                                .Take(request.PageSize)
+                                                .OrderByDescending(r => r.CreatedAt)
+                                                .ToListAsync();
 
-            return reviews;
+            var reviews =
+                    data.Select(r =>
+                    new ReviewResponse { Id = r.Id, Comment = r.Comment, Title = r.Title, Rating = r.Rating, Author = r.User.Name, CreatedAt = r.CreatedAt, LikesCount = r.LikesCount });
+
+            var count = await query.CountAsync();
+
+            return new PagedResponse<IEnumerable<ReviewResponse>?>(reviews, count, request.PageNumber, request.PageSize);
         }
     }
 }

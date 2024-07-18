@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
+using LibraSoft.Api.Constants;
 using LibraSoft.Core.Commons;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
-using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Review;
 using LibraSoft.Core.Responses.Review;
 using Microsoft.AspNetCore.Authorization;
@@ -12,15 +12,19 @@ namespace LibraSoft.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class ReviewController : ControllerBase
     {
         private readonly IReviewHandler _reviewHandler;
         private readonly IBookHandler _bookHandler;
+        private readonly ICacheService _cache;
 
-        public ReviewController(IReviewHandler reviewHandler, IBookHandler bookHandler)
+        public ReviewController(IReviewHandler reviewHandler, IBookHandler bookHandler, ICacheService cache)
         {
             _reviewHandler = reviewHandler;
             _bookHandler = bookHandler;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -44,6 +48,7 @@ namespace LibraSoft.Api.Controllers
             await _reviewHandler.CreateAsync(request, userId);
 
             await _bookHandler.UpdateBookRatingAsync(book);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
 
             return Created();
         }
@@ -59,29 +64,30 @@ namespace LibraSoft.Api.Controllers
             }
 
             await _reviewHandler.DeleteAsync(review);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
 
             return NoContent();
         }
 
         [HttpGet("{bookId}")]
-        public async Task<IActionResult> GetAll(Guid bookId)
+        [ProducesResponseType(typeof(PagedResponse<IEnumerable<ReviewResponse>?>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll(Guid bookId, [FromQuery] int pageSize = 5, [FromQuery] int pageNumber = 1)
         {
-            var reviews = await _reviewHandler.GetAllAsync(bookId);
+            var request = new GetAllReviewRequest { BookId = bookId, PageNumber = pageNumber, PageSize = pageSize };
+            string cacheKey = $"get-all-review-{bookId}-{pageNumber}-{pageSize}";
 
-            if (reviews is null)
+            var reviews = await _cache.GetOrCreateAsync(cacheKey, async () =>
             {
-                return Ok(new Response<List<string>>([]));
-            }
-            var response = 
-                new Response<IEnumerable<ReviewResponse>>(
-                    reviews.Select(r => 
-                    new ReviewResponse { Id = r.Id, Comment = r.Comment, Title = r.Title, Rating = r.Rating, Author = r.User.Name, CreatedAt = r.CreatedAt, LikesCount = r.LikesCount }));
+                var reviewsInDb = await _reviewHandler.GetAllAsync(request);
+                return reviewsInDb;
+            }, CacheTagConstants.Review);
 
-            return Ok(response);
+            return Ok(reviews);
         }
 
         [HttpGet("{bookId}/user")]
         [Authorize]
+        [ProducesResponseType(typeof(Response<ReviewResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get(Guid bookId)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
