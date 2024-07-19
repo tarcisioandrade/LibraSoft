@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Responses.Like;
+using LibraSoft.Api.Constants;
 
 namespace LibraSoft.Api.Controllers
 {
@@ -17,10 +18,13 @@ namespace LibraSoft.Api.Controllers
     {
         private readonly ILikeHandler _likeHandler;
         private readonly IReviewHandler _reviewHandler;
-        public LikeController(ILikeHandler likeHandler, IReviewHandler reviewHandler)
+        private readonly ICacheService _cache;
+
+        public LikeController(ILikeHandler likeHandler, IReviewHandler reviewHandler, ICacheService cache)
         {
             _likeHandler = likeHandler;
             _reviewHandler = reviewHandler;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -35,6 +39,7 @@ namespace LibraSoft.Api.Controllers
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             await _likeHandler.CreateAsync(review, userId);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
 
             return Ok(new { review.LikesCount });
         }
@@ -73,6 +78,7 @@ namespace LibraSoft.Api.Controllers
             }
 
             await _likeHandler.DeleteAsync(review, like);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
 
             return Ok(new Response<LikeCountResponse>(new LikeCountResponse { LikesCount = review.LikesCount }));
         }
