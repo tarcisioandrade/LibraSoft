@@ -124,6 +124,11 @@ namespace LibraSoft.Api.Controllers
                 ReviewsCount = bookInData.Reviews.Count(),
                 Publisher = bookInData.Publisher,
                 PublicationAt = bookInData.PublicationAt,
+                Language = bookInData.Language,
+                PageCount = bookInData.PageCount,
+                CoverType = bookInData.CoverType,
+                Dimensions = bookInData.Dimensions,
+                Sinopse = bookInData.Sinopse,
                 Author = new AuthorResponse
                 {
                     Id = bookInData.Author.Id,
@@ -185,6 +190,8 @@ namespace LibraSoft.Api.Controllers
         }
 
         [HttpGet("{id}/related")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(BookRelatedResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetRelated(Guid id)
         {
             var book = await _bookHandler.GetByIdAsync(id, asNoTracking: true);
@@ -196,28 +203,17 @@ namespace LibraSoft.Api.Controllers
 
             var bookInDb = await _bookHandler.GetWithCategoriesAsync(book);
 
-            var response = bookInDb?.Select(b => new BookResponse
+            var response = bookInDb?.Select(b => new BookRelatedResponse
             {
                 Id = b.Id,
                 Title = b.Title,
                 Image = b.Image,
-                Isbn = b.Isbn,
-                CopiesAvaliable = b.CopiesAvailable,
-                Publisher = b.Publisher,
-                PublicationAt = b.PublicationAt,
-                Author = new AuthorResponse
-                {
-                    Id = b.Author.Id,
-                    Name = b.Author.Name,
-                    Status = b.Author.Status,
-                    Biography = b.Author.Biography,
-                    DateBirth = b.Author.DateBirth
-                },
-                Categories = b.Categories.Select(c => new CategoryResponse { Id = c.Id, Title = c.Title }),
-                Status = b.Status
+                AverageRating = b.AverageRating,
+                AuthorName = b.Author.Name,
+                CoverType = b.CoverType
             });
 
-            return Ok(new Response<IEnumerable<BookResponse>?>(response));  
+            return Ok(new Response<IEnumerable<BookRelatedResponse>?>(response));  
         }
     }
 }

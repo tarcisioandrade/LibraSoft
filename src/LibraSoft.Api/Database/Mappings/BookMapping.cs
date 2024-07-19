@@ -1,4 +1,4 @@
-﻿    using LibraSoft.Core.Models;
+﻿using LibraSoft.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,29 +8,25 @@ namespace LibraSoft.Api.Database.Mappings
     {
         public void Configure(EntityTypeBuilder<Book> builder)
         {
-            builder.HasKey(x => x.Id);
-
-
-            builder.Property(x => x.Title) .IsRequired(true);
-
-            builder.Property(x => x.Isbn).IsRequired(true);
-            builder.HasIndex(x => x.Isbn).IsUnique();
-
-            builder.Property(x => x.Publisher).IsRequired(true);
-
-            builder.Property(x => x.PublicationAt).IsRequired(true);
-
-            builder.Property(x => x.Status).IsRequired(true).HasConversion<string>(); ;
-
-            builder.Property(x => x.CopiesAvailable).IsRequired(true);
-
-            builder.Property(x => x.AuthorId).IsRequired(true);
-
+            builder.HasKey(b => b.Id);
+            builder.Property(b => b.Title).IsRequired();
+            builder.Property(b => b.Isbn).IsRequired();
+            builder.HasIndex(b => b.Isbn).IsUnique();
+            builder.Property(b => b.Image).IsRequired();
+            builder.Property(b => b.Publisher).IsRequired();
+            builder.Property(b => b.PublicationAt).IsRequired();
+            builder.Property(b => b.Status).IsRequired().HasConversion<string>();
+            builder.Property(b => b.CopiesAvailable).IsRequired();
+            builder.Property(b => b.AuthorId).IsRequired();
+            builder.HasMany(b => b.Reviews).WithOne(b => b.Book).HasForeignKey(b => b.BookId);
+            builder.OwnsOne(b => b.Dimensions);
+            builder.Property(b => b.Sinopse).IsRequired();
+            builder.Property(b => b.Language).IsRequired();
+            builder.Property(b => b.CoverType).IsRequired().HasConversion<string>();
+            builder.Property(b => b.PageCount).IsRequired();
             builder.HasMany(b => b.Categories).WithMany(b => b.Books).UsingEntity<Dictionary<string, object>>(
                 "BookCategory", b => b.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
                 c => c.HasOne<Book>().WithMany().HasForeignKey("BookId"));
-
-            builder.HasMany(b => b.Reviews).WithOne(b => b.Book).HasForeignKey(b => b.BookId);
         }
     }
 }

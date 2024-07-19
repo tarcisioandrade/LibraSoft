@@ -29,6 +29,11 @@ namespace LibraSoft.Api.Handlers
                                 categories: categories,
                                 copiesAvailable: request.CopiesAvailable,
                                 authorId: request.AuthorId,
+                                pageCount: request.PageCount,
+                                sinopse: request.Sinopse,
+                                coverType: request.CoverType,
+                                dimensions: request.Dimensions,
+                                language: request.Language,
                                 image: request.Image);
 
             await _context.Books.AddAsync(book);    
@@ -43,7 +48,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<PagedResponse<IEnumerable<BookResponse>?>> GetAllAsync(GetAllBookRequest request)
         {
-            IQueryable<Book> query = _context.Books.Include(book => book.Categories).Include(book => book.Author);
+            IQueryable<Book> query = _context.Books.Include(book => book.Categories).Include(book => book.Author).Include(book => book.Reviews);
 
             List<Book>? books = [];
 
@@ -56,7 +61,7 @@ namespace LibraSoft.Api.Handlers
             if (request.Search is not null)
             {
                 var searchInBookTitle = query.Where(book => EF.Functions.ILike(book.Title, $"%{request.Search}%"));
-                var searchInBookAuthorName = query.Include(book => book.Author).Where(book => EF.Functions.ILike(book.Author.Name, $"%{request.Search}%"));
+                var searchInBookAuthorName = query.Where(book => EF.Functions.ILike(book.Author.Name, $"%{request.Search}%"));
                 
                 if (searchInBookTitle.IsNullOrEmpty() is false)
                 {
@@ -87,6 +92,13 @@ namespace LibraSoft.Api.Handlers
                 CopiesAvaliable = book.CopiesAvailable,
                 Publisher = book.Publisher,
                 PublicationAt = book.PublicationAt,
+                AverageRating = book.AverageRating,
+                Language = book.Language,
+                PageCount = book.PageCount,
+                CoverType = book.CoverType,
+                Dimensions = book.Dimensions,
+                Sinopse = book.Sinopse,
+                ReviewsCount = book.Reviews.Count(),
                 Author = new AuthorResponse
                 {
                     Id = book.Author.Id,
