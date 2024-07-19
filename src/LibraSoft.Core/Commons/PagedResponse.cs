@@ -23,5 +23,7 @@ namespace LibraSoft.Core.Commons
         public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
         public int PageSize { get; set; } = Configuration.DefaultPageSize;
         public int TotalCount { get; set; }
+        public bool HasPreviousPage => CurrentPage > 1;
+        public bool HasNextPage => CurrentPage < TotalPages;
     }
 }
