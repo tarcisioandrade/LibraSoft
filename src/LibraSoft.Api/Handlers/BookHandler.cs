@@ -130,6 +130,14 @@ namespace LibraSoft.Api.Handlers
             return book;
         }
 
+        public async Task<List<Book>?> GetWithCategoriesAsync(Book book)
+        {
+            var categoriesId = book.Categories.Select(c => c.Id);
+            var relatedBooks = await _context.Books.Include(b => b.Categories).Include(b => b.Author).Where(b => b.Id != book.Id && b.Status == EStatus.Active && b.Categories.Any(c => categoriesId.Contains(c.Id))).AsNoTracking().Take(5).ToListAsync();
+
+            return relatedBooks;
+        }
+
         public async Task InactiveAsync(Book book)
         {
             book.Inactive();

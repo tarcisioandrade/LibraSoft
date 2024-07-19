@@ -183,5 +183,41 @@ namespace LibraSoft.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}/related")]
+        public async Task<IActionResult> GetRelated(Guid id)
+        {
+            var book = await _bookHandler.GetByIdAsync(id, asNoTracking: true);
+
+            if (book is null)
+            {
+                return BadRequest(new BookNotFoundError(id));
+            }
+
+            var bookInDb = await _bookHandler.GetWithCategoriesAsync(book);
+
+            var response = bookInDb?.Select(b => new BookResponse
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Image = b.Image,
+                Isbn = b.Isbn,
+                CopiesAvaliable = b.CopiesAvailable,
+                Publisher = b.Publisher,
+                PublicationAt = b.PublicationAt,
+                Author = new AuthorResponse
+                {
+                    Id = b.Author.Id,
+                    Name = b.Author.Name,
+                    Status = b.Author.Status,
+                    Biography = b.Author.Biography,
+                    DateBirth = b.Author.DateBirth
+                },
+                Categories = b.Categories.Select(c => new CategoryResponse { Id = c.Id, Title = c.Title }),
+                Status = b.Status
+            });
+
+            return Ok(new Response<IEnumerable<BookResponse>?>(response));  
+        }
     }
 }
