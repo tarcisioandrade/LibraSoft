@@ -53,10 +53,11 @@ namespace LibraSoft.Api
             builder.Services.AddTransient<IBookHandler, BookHandler>();
             builder.Services.AddTransient<IAuthorHandler, AuthorHandler>();
             builder.Services.AddTransient<IRentHandler, RentHandler>();
+            builder.Services.AddTransient<IReviewHandler, ReviewHandler>();
+            builder.Services.AddTransient<ILikeHandler, LikeHandler>();
+            builder.Services.AddTransient<IBagHandler, BagHandler>();
             builder.Services.AddScoped<ITokenClaimsService, TokenClaimService>();
             builder.Services.AddScoped<ICacheService, DistributedCacheService>();
-            builder.Services.AddScoped<IReviewHandler, ReviewHandler>();
-            builder.Services.AddScoped<ILikeHandler, LikeHandler>();
             builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 
             // Services to Hungfire
@@ -81,8 +82,6 @@ namespace LibraSoft.Api
 
         public static void AddCrossOrigin(this WebApplicationBuilder builder)
         {
-            const string CORS_POLICY = "CorsPolicy";
-
             builder.Services.AddCors(option =>
             {
                 option.AddDefaultPolicy(builder =>

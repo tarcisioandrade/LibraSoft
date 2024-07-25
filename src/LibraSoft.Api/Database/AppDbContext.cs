@@ -16,6 +16,7 @@ namespace LibraSoft.Api.Database
         public DbSet<Rent> Rents { get; set; } = null!;
         public DbSet<Review> Reviews { get; set; } = null!;
         public DbSet<Like> Likes { get; set; } = null!;
+        public DbSet<Bag> Bags { get; set; } = null!;
 
         public AppDbContext(IConfiguration configuration)
         {
@@ -38,6 +39,7 @@ namespace LibraSoft.Api.Database
             modelBuilder.ApplyConfiguration(new RentMapping());
             modelBuilder.ApplyConfiguration(new ReviewMapping());
             modelBuilder.ApplyConfiguration(new LikeMapping());
+            modelBuilder.ApplyConfiguration(new BagMapping());
         }
     }
 }
