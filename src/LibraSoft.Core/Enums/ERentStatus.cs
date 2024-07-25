@@ -2,8 +2,9 @@
 {
     public enum ERentStatus
     {
-        Rental = 1,
-        Returned = 2,
-        Pending = 3,
+        Requested_Awaiting_Pickup = 1,
+        Rent_In_Progress = 2,
+        Rent_Expired = 3,
+        Rent_Finished = 4
     }
 }

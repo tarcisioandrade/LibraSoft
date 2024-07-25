@@ -19,7 +19,7 @@ namespace LibraSoft.Api.Events
 
         public async Task Execute()
         {
-            var rents = await _context.Rents.Where(rent => rent.Status != ERentStatus.Returned).ToListAsync();
+            var rents = await _context.Rents.Where(rent => rent.Status != ERentStatus.Rent_Finished).ToListAsync();
 
             if (rents.Count == 0) return;
 
@@ -77,7 +77,7 @@ namespace LibraSoft.Api.Events
                         _emailSender.Send(user.Email, suspenseEmailContent);
 
                         user.Suspend(suspensePunishmentDetails);
-                        rent.SetPending();
+                        rent.SetInProgress();
                     }
                 }
             }

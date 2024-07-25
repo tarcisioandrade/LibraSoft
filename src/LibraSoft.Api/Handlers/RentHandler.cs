@@ -75,7 +75,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task ReturnRent(Rent rent)
         {
-            rent.Return();
+            rent.SetFinished();
             await _context.SaveChangesAsync();
         }
     }

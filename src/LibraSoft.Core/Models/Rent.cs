@@ -17,7 +17,7 @@ namespace LibraSoft.Core.Models
 
         protected Rent() { }
 
-        public Rent(DateTime rentDate, DateTime returnDate, Guid userId, IEnumerable<Book> books, ERentStatus status = ERentStatus.Rental)
+        public Rent(DateTime rentDate, DateTime returnDate, Guid userId, IEnumerable<Book> books, ERentStatus status = ERentStatus.Requested_Awaiting_Pickup)
         {
             RentDate = rentDate;
             ReturnDate = returnDate;
@@ -41,14 +41,14 @@ namespace LibraSoft.Core.Models
             return Books.Count();
         }
 
-        public void SetPending()
+        public void SetInProgress()
         {
-            this.Status = ERentStatus.Pending;
+            this.Status = ERentStatus.Rent_In_Progress;
         }
 
-        public void Return()
+        public void SetFinished()
         {
-            this.Status = ERentStatus.Returned;
+            this.Status = ERentStatus.Rent_Finished;
         }
 
         public void EmailAlerted()
