@@ -10,6 +10,7 @@ namespace LibraSoft.Api.Database.Mappings
         {
             builder.HasKey(b => b.Id);
             builder.Property(b => b.UserId).IsRequired();
+            builder.Property(b => b.BookId).IsRequired();
         }   
     }
 }
