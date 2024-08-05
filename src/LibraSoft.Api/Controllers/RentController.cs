@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using LibraSoft.Api.Constants;
 using LibraSoft.Core;
 using LibraSoft.Core.Commons;
 using LibraSoft.Core.Enums;
@@ -22,14 +21,12 @@ namespace LibraSoft.Api.Controllers
         private readonly IRentHandler _renthandler;
         private readonly IBookHandler _bookhandler;
         private readonly IUserHandler _userhandler;
-        private readonly ICacheService _cache;
 
-        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler, ICacheService cache)
+        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler)
         {
             _renthandler = rentHandler;
             _bookhandler = bookHandler;
             _userhandler = userhandler;
-            _cache = cache;
         }
 
         [HttpPost]
@@ -111,8 +108,6 @@ namespace LibraSoft.Api.Controllers
             }
 
             await _renthandler.CreateAsync(userId, req, books);
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
-
             return Created();
         }
 
@@ -122,15 +117,8 @@ namespace LibraSoft.Api.Controllers
         public async Task<IActionResult> Return(Guid id)
         {
             var rent = await _renthandler.GetByIdAsync(id);
-
-            if (rent is null)
-            {
-                return BadRequest(new RentNotFoundError(id));
-            }
-
+            if (rent is null) return BadRequest(new RentNotFoundError(id));
             await _renthandler.ReturnAsync(rent);
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
-
             return NoContent();
         }
 
@@ -148,13 +136,7 @@ namespace LibraSoft.Api.Controllers
                 PageSize = pageSize,
                 Status = status
             };
-            string cacheKey = $"get-all-rent-{Uri.EscapeDataString(status.ToString())}-{pageNumber}-{pageSize}";
-
-            var rents = await _cache.GetOrCreateAsync(cacheKey, async () =>
-            {
-                return await _renthandler.GetAllByUserIdAsync(request, userId);
-            }, tag: CacheTagConstants.Rent);
-
+            var rents = await _renthandler.GetAllByUserIdAsync(request, userId);
             return Ok(rents);
         }
 
@@ -197,7 +179,6 @@ namespace LibraSoft.Api.Controllers
             if (rent is null) return BadRequest(new RentNotFoundError(id));
             if (rent.Status == ERentStatus.Rent_Canceled) return BadRequest(new RentAlreadyCanceled(id));
             await _renthandler.CancelAsync(rent);
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
             return NoContent();
         }
 
@@ -210,7 +191,6 @@ namespace LibraSoft.Api.Controllers
             var rent = await _renthandler.GetByIdAsync(id);
             if (rent is null) return BadRequest(new RentNotFoundError(id));
             await _renthandler.ConfirmAsync(rent);
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
             return NoContent();
         }
     }
