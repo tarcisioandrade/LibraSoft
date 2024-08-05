@@ -19,13 +19,24 @@ namespace LibraSoft.Api.Handlers
             var bag = new Bag(request.BookId, userId);
             await _context.Bags.AddAsync(bag);
             await _context.SaveChangesAsync();
-        }   
+        }
 
-        public async Task<List<Bag>?> GetAllAsync(Guid userId)
+        public async Task DeleteAsync(Bag bag)
         {
-            var bags = await _context.Bags.Where(b => b.UserId == userId).AsNoTracking().ToListAsync();
+            _context.Remove(bag);
+            await _context.SaveChangesAsync();
+        }
 
+        public async Task<List<Bag>> GetAllAsync(Guid userId)
+        {
+            var bags = await _context.Bags.Where(b => b.UserId == userId).Include(b => b.Book).AsNoTracking().ToListAsync();
             return bags;
+        }
+
+        public async Task<Bag?> GetAsync(Guid bagId)
+        {
+            var bag = await _context.Bags.FirstOrDefaultAsync(b => b.Id == bagId);
+            return bag;
         }
     }
 }
