@@ -1,9 +1,13 @@
 ﻿using System.Security.Claims;
+using LibraSoft.Api.Constants;
+using LibraSoft.Core;
+using LibraSoft.Core.Commons;
+using LibraSoft.Core.Enums;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Rent;
-using LibraSoft.Core.Enums;
+using LibraSoft.Core.Responses.Rent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,12 +22,14 @@ namespace LibraSoft.Api.Controllers
         private readonly IRentHandler _renthandler;
         private readonly IBookHandler _bookhandler;
         private readonly IUserHandler _userhandler;
+        private readonly ICacheService _cache;
 
-        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler)
+        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler, ICacheService cache)
         {
             _renthandler = rentHandler;
             _bookhandler = bookHandler;
             _userhandler = userhandler;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -34,6 +40,7 @@ namespace LibraSoft.Api.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             var user = await _userhandler.GetByIdAsync(userId);
+            var LIMIT_TO_BOOKS_RENT = 3;
 
             if (user!.PunishmentsDetails.Count > 0)
             {
@@ -52,16 +59,16 @@ namespace LibraSoft.Api.Controllers
                 return BadRequest(new UserHasPunishmentError(user.Status.ToString()));
             }
 
-            if (req.Books.Count > 5)
+            if (req.Books.Count > LIMIT_TO_BOOKS_RENT)
             {
                 return BadRequest(new RentBookLimitExceededError());
             }
 
-            var userRents = await _renthandler.GetRentsByUserIdAsync(userId);
+            var userRents = user!.Rents;
             
             var booksInRents = userRents?.Aggregate(0, (acc, ur) => acc + ur.BooksRented());
 
-            if (userRents?.Count == 5 || (booksInRents + req.Books.Count) > 5)
+            if (userRents?.Count() == LIMIT_TO_BOOKS_RENT || (booksInRents + req.Books.Count) > LIMIT_TO_BOOKS_RENT)
             {
                 return BadRequest(new RentBookLimitExceededError());
             }
@@ -70,7 +77,7 @@ namespace LibraSoft.Api.Controllers
 
             foreach (var bookReq in req.Books)
             {
-                if (userRents != null && userRents.Count > 0)
+                if (userRents != null && userRents?.Count() > 0)
                 {
                     var booksRented = userRents.SelectMany(ur => ur.Books).ToList();
                     var bookAlreadyRent = booksRented.FirstOrDefault(b => b.Equal(bookReq.Id));
@@ -104,6 +111,7 @@ namespace LibraSoft.Api.Controllers
             }
 
             await _renthandler.CreateAsync(userId, req, books);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
 
             return Created();
         }
@@ -120,8 +128,89 @@ namespace LibraSoft.Api.Controllers
                 return BadRequest(new RentNotFoundError(id));
             }
 
-            await _renthandler.ReturnRent(rent);
+            await _renthandler.ReturnAsync(rent);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
 
+            return NoContent();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [ProducesResponseType(typeof(PagedResponse<IEnumerable<RentResponse>?>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll(EQueryRentStatus status = EQueryRentStatus.All,
+                                                int pageNumber = Configuration.DefaultPageNumber,
+                                                int pageSize = Configuration.DefaultPageSize)
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var request = new GetAllRentRequest
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Status = status
+            };
+            string cacheKey = $"get-all-rent-{Uri.EscapeDataString(status.ToString())}-{pageNumber}-{pageSize}";
+
+            var rents = await _cache.GetOrCreateAsync(cacheKey, async () =>
+            {
+                return await _renthandler.GetAllByUserIdAsync(request, userId);
+            }, tag: CacheTagConstants.Rent);
+
+            return Ok(rents);
+        }
+
+        [HttpGet(("{id}"))]
+        [Authorize]
+        [ProducesResponseType(typeof(Response<RentResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var rent = await _renthandler.GetByIdAsync(id);
+            if (rent is null) return BadRequest(new RentNotFoundError(id));
+            var response = new Response<RentResponse>(new RentResponse
+            {
+                Id = rent.Id,
+                RentDate = rent.RentDate,
+                ExpectedReturnDate = rent.ExpectedReturnDate,
+                ReturnedDate = rent.ReturnedDate,
+                Status = rent.Status,
+                Books = rent.Books.Select(b => new BookInRent
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Image = b.Image,
+                    CoverType = b.CoverType,
+                    Author = new AuthorInBookRent { Name = b.Author.Name },
+                    AverageRating = b.AverageRating,
+                    Publisher = b.Publisher
+                })
+            });
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Cancel(Guid id)
+        {
+            var rent = await _renthandler.GetByIdAsync(id);
+            if (rent is null) return BadRequest(new RentNotFoundError(id));
+            if (rent.Status == ERentStatus.Rent_Canceled) return BadRequest(new RentAlreadyCanceled(id));
+            await _renthandler.CancelAsync(rent);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
+            return NoContent();
+        }
+
+        [HttpPost("{id}/confirm")]
+        [Authorize("admin")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Confirm(Guid id)
+        {
+            var rent = await _renthandler.GetByIdAsync(id);
+            if (rent is null) return BadRequest(new RentNotFoundError(id));
+            await _renthandler.ConfirmAsync(rent);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Rent);
             return NoContent();
         }
     }

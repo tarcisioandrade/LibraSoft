@@ -1,5 +1,7 @@
-﻿using LibraSoft.Core.Models;
+﻿using LibraSoft.Core.Commons;
+using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Rent;
+using LibraSoft.Core.Responses.Rent;
 
 namespace LibraSoft.Core.Interfaces
 {
@@ -7,8 +9,10 @@ namespace LibraSoft.Core.Interfaces
     {
         public Task CreateAsync(Guid userId, CreateRentRequest request, List<Book> books);
         public Task<Rent?> GetByIdAsync(Guid id);
-        public Task ReturnRent(Rent rent);
-        public Task<List<Rent>?> GetRentsByUserIdAsync(Guid id);
-        public Task<List<Rent>?> GetRentsByUserEmailAsync(string email);
+        public Task ReturnAsync(Rent rent);
+        public Task CancelAsync(Rent rent);
+        public Task ConfirmAsync(Rent rent);
+        public Task<PagedResponse<IEnumerable<RentResponse>?>> GetAllByUserIdAsync(GetAllRentRequest request, Guid id);
+        public Task<List<Rent>?> GetAllByUserEmailAsync(string email);
     }
 }

@@ -1,7 +1,10 @@
 ﻿using LibraSoft.Api.Database;
+using LibraSoft.Core.Commons;
+using LibraSoft.Core.Enums;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Rent;
+using LibraSoft.Core.Responses.Rent;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Handlers
@@ -17,29 +20,28 @@ namespace LibraSoft.Api.Handlers
 
         public async Task CreateAsync(Guid userId, CreateRentRequest request, List<Book> books)
         {
-            // Quantidade de dias para devolver o livro;
-            var rentalDays = 7;
+            var amountDaysToReturnBook = 30;
 
-            DateTime returnDate = CalculateReturnDate(request.RentDate, rentalDays);
+            DateTime returnDate = CalculateReturnDate(request.RentDate, amountDaysToReturnBook);
 
             var handlerRequest = new CreateRentRequestHandler
             {
                 RentDate = request.RentDate,
-                ReturnDate = returnDate,
+                ExpectedReturnDate = returnDate,
                 Books = books
             };
 
-            var rent = new Rent(rentDate: handlerRequest.RentDate, returnDate: handlerRequest.ReturnDate, userId: userId, books: books);
+            var rent = new Rent(rentDate: handlerRequest.RentDate, expectedReturnDate: handlerRequest.ExpectedReturnDate, userId: userId, books: books);
 
             await _context.Rents.AddAsync(rent);
             await _context.SaveChangesAsync();
         }
-        private static DateTime CalculateReturnDate(DateTime rentDate, int rentalDays)
+        private static DateTime CalculateReturnDate(DateTime rentDate, int amountDaysToReturnBook)
         {
             int daysAdded = 0;
             DateTime returnDate = rentDate;
 
-            while (daysAdded < rentalDays)
+            while (daysAdded < amountDaysToReturnBook)
             {
                 returnDate = returnDate.AddDays(1);
 
@@ -52,14 +54,46 @@ namespace LibraSoft.Api.Handlers
             return returnDate;
         }
 
-        public async Task<List<Rent>?> GetRentsByUserIdAsync(Guid id)
+        public async Task<PagedResponse<IEnumerable<RentResponse>?>> GetAllByUserIdAsync(GetAllRentRequest request, Guid id)
         {
-            var rents = await _context.Rents.AsNoTracking().Where(r => r.UserId == id).Include(r => r.Books).ToListAsync();
+            IQueryable<Rent> query = _context.Rents.AsNoTracking().Where(r => r.UserId == id).Include(r => r.Books).ThenInclude(b => b.Author);
 
-            return rents;
+           if (request.Status == EQueryRentStatus.Pending)
+            {
+                query = query.Where(r => r.Status != ERentStatus.Rent_Finished && r.Status != ERentStatus.Rent_Canceled);
+            }
+
+            if (request.Status == EQueryRentStatus.Complete)
+            {
+                query = query.Where(r => r.Status == ERentStatus.Rent_Finished || r.Status == ERentStatus.Rent_Canceled);
+            }
+
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderByDescending(r => r.RentDate).ToListAsync();
+            var count = await query.CountAsync();
+
+            var rents = result?.Select(r => new RentResponse
+            {
+                Id = r.Id,
+                RentDate = r.RentDate,
+                ExpectedReturnDate = r.ExpectedReturnDate,
+                ReturnedDate = r.ReturnedDate,
+                Status = r.Status,
+                Books = r.Books.Select(b => new BookInRent
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Image = b.Image,
+                    CoverType = b.CoverType,
+                    Author = new AuthorInBookRent { Name = b.Author.Name },
+                    AverageRating = b.AverageRating,
+                    Publisher = b.Publisher
+                })
+            });
+
+            return new PagedResponse<IEnumerable<RentResponse>?>(rents, count, request.PageNumber, request.PageSize);
         }
 
-        public async Task<List<Rent>?> GetRentsByUserEmailAsync(string email)
+        public async Task<List<Rent>?> GetAllByUserEmailAsync(string email)
         {
             var rents = await _context.Rents.AsNoTracking().Where(r => r.User.Email == email).Include(r => r.Books).ToListAsync();
 
@@ -68,14 +102,25 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<Rent?> GetByIdAsync(Guid id)
         {
-            var rent = await _context.Rents.FirstOrDefaultAsync(rent => rent.Id == id);
-
+            var rent = await _context.Rents.Where(r => r.Id == id).Include(r => r.Books).ThenInclude(b => b.Author).FirstOrDefaultAsync();
             return rent;
         }
 
-        public async Task ReturnRent(Rent rent)
+        public async Task ReturnAsync(Rent rent)
         {
             rent.SetFinished();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task CancelAsync(Rent rent)
+        {
+            rent.SetCanceled();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ConfirmAsync(Rent rent)
+        {
+            rent.SetInProgress();
             await _context.SaveChangesAsync();
         }
     }
