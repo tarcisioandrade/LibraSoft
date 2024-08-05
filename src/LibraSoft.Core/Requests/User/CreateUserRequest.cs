@@ -1,5 +1,4 @@
-﻿using LibraSoft.Core.Enums;
-using LibraSoft.Domain.ValueObjects;
+﻿using LibraSoft.Domain.ValueObjects;
 
 namespace LibraSoft.Core.Requests.User
 {

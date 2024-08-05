@@ -49,7 +49,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+            var user = await _context.Users.Include(user => user.Rents.Where(r => r.Status != ERentStatus.Rent_Canceled && r.Status != ERentStatus.Rent_Finished)).ThenInclude(u => u.Books).FirstOrDefaultAsync(user => user.Id == id);
             return user;
         }
 
