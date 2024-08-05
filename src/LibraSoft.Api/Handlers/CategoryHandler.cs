@@ -1,6 +1,7 @@
 ﻿using LibraSoft.Api.Database;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
+using LibraSoft.Core.Enums;
 using LibraSoft.Core.Requests.Category;
 using LibraSoft.Core.Responses.Category;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<List<CategoryResponse>?> GetAll()
         {
-            var categories = await _context.Categories.AsNoTracking().ToListAsync();
+            var categories = await _context.Categories.Include(c => c.Books).Where(c => c.Books.Any(b => b.Status == EStatus.Active)).AsNoTracking().ToListAsync();
 
             var response = categories.Select(category => new CategoryResponse
             {
