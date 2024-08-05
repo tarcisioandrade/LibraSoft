@@ -8,7 +8,8 @@ namespace LibraSoft.Core.Models
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public DateTime RentDate { get; private set; }
-        public DateTime ReturnDate { get; private set; }
+        public DateTime ExpectedReturnDate { get; private set; }
+        public DateTime? ReturnedDate { get; private set; } = null;
         public ERentStatus Status { get; private set; }
         public bool EmailAlertSended { get; private set; } = false;
         public Guid UserId { get; private set; }
@@ -17,10 +18,11 @@ namespace LibraSoft.Core.Models
 
         protected Rent() { }
 
-        public Rent(DateTime rentDate, DateTime returnDate, Guid userId, IEnumerable<Book> books, ERentStatus status = ERentStatus.Requested_Awaiting_Pickup)
+        public Rent(DateTime rentDate, DateTime expectedReturnDate, Guid userId, IEnumerable<Book> books, ERentStatus status = ERentStatus.Requested_Awaiting_Pickup, DateTime? returnedDate = null)
         {
             RentDate = rentDate;
-            ReturnDate = returnDate;
+            ExpectedReturnDate = expectedReturnDate;
+            ReturnedDate = returnedDate;
             UserId = userId;
             Books = books;
             Status = status;
@@ -49,6 +51,11 @@ namespace LibraSoft.Core.Models
         public void SetFinished()
         {
             this.Status = ERentStatus.Rent_Finished;
+        }
+
+        public void SetCanceled()
+        {
+            this.Status = ERentStatus.Rent_Canceled;
         }
 
         public void EmailAlerted()

@@ -13,7 +13,7 @@ namespace LibraSoft.Api.Database.Mappings
             builder.Property(x => x.RentDate)
            .IsRequired(true);
 
-            builder.Property(x => x.ReturnDate)
+            builder.Property(x => x.ExpectedReturnDate)
            .IsRequired(true);
 
             builder.Property(x => x.Status)

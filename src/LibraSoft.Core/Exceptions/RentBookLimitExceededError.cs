@@ -2,9 +2,9 @@
 {
     public class RentBookLimitExceededError : ControllerError
     {
-        public RentBookLimitExceededError()
+        public RentBookLimitExceededError(int? LIMIT_TO_BOOKS_RENT = 3)
         {
-            Errors.Add("Limit max (5) of rent exceeded.");
+            Errors.Add($"Limit max ({LIMIT_TO_BOOKS_RENT}) of rent exceeded.");
         }
     }
 }

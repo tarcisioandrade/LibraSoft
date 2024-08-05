@@ -3,6 +3,7 @@ using System;
 using LibraSoft.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LibraSoft.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240725123749_BookReferenceInModelBag")]
+    partial class BookReferenceInModelBag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,13 +203,10 @@ namespace LibraSoft.Api.Migrations
                     b.Property<bool>("EmailAlertSended")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("ExpectedReturnDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateTime>("RentDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("ReturnedDate")
+                    b.Property<DateTime>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")

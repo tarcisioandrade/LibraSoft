@@ -26,7 +26,7 @@ namespace LibraSoft.Api.Events
             foreach (var rent in rents)
             {
                 var user = await _context.Users.Where(user => user.Status == EUserStatus.Active).FirstOrDefaultAsync(user => user.Id == rent.UserId);
-                var isToReturnBookInNextDay = IsReturnBookOnNextBusinessDay(rent.ReturnDate);
+                var isToReturnBookInNextDay = IsReturnBookOnNextBusinessDay(rent.ExpectedReturnDate);
 
                 var teste = user?.PunishmentsDetails;
 
@@ -39,7 +39,7 @@ namespace LibraSoft.Api.Events
                         EmailMessageRequest emailContent = new()
                         {
                             Subject = "ALERTA: Devolução de livro",
-                            Body = $"Prezado Sr.{user.Name}, evite sua suspensão, não esqueça de devolver o(s) livro(s) até o dia {rent.ReturnDate.ToLocalTime()}."
+                            Body = $"Prezado Sr.{user.Name}, evite sua suspensão, não esqueça de devolver o(s) livro(s) até o dia {rent.ExpectedReturnDate.ToLocalTime()}."
                         };
 
                         _emailSender.Send(user.Email, emailContent);
@@ -48,7 +48,7 @@ namespace LibraSoft.Api.Events
                     }
                 }
 
-                if (IsReturnBookDatePassed(rent.ReturnDate))
+                if (IsReturnBookDatePassed(rent.ExpectedReturnDate))
                 {
                     if (user.PunishmentsDetails.Count == 2)
                     {
