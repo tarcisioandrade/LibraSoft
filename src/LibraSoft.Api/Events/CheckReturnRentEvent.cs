@@ -1,4 +1,5 @@
 ﻿using LibraSoft.Api.Database;
+using LibraSoft.Core.Commons;
 using LibraSoft.Core.Enums;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Email;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Events
 {
-    public class CheckReturnRentEvent
+    public class CheckReturnRentEvent : EventBase
     {
         private readonly AppDbContext _context;
         private readonly IEmailSenderService _emailSender;
@@ -17,7 +18,7 @@ namespace LibraSoft.Api.Events
             _emailSender = emailSender;
         }
 
-        public async Task Execute()
+        public override async Task Execute()
         {
             var rents = await _context.Rents.Where(rent => rent.Status != ERentStatus.Rent_Finished).ToListAsync();
 
@@ -103,10 +104,6 @@ namespace LibraSoft.Api.Events
         {
             DateTime now = DateTime.UtcNow;
             return returnDate.Date < now.Date;
-        }
-        public void ExecuteSync()
-        {
-            Execute().Wait();
         }
     }
 }

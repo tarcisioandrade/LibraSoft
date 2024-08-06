@@ -1,4 +1,5 @@
 ﻿using LibraSoft.Api.Database;
+using LibraSoft.Core.Commons;
 using LibraSoft.Core.Enums;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Email;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Events
 {
-    public class CheckUserPunishmentStatus
+    public class CheckUserPunishmentStatus : EventBase
     {
         private readonly AppDbContext _context;
         private readonly IEmailSenderService _emailSender;
@@ -17,7 +18,7 @@ namespace LibraSoft.Api.Events
             _emailSender = emailSender;
         }
 
-        public async Task Execute()
+        public override async Task Execute()
         {
             var users = await _context.Users.Where(user => user.Status != EUserStatus.Active).ToListAsync();
 
@@ -49,10 +50,5 @@ namespace LibraSoft.Api.Events
 
             await _context.SaveChangesAsync();
             }
-
-        public void ExecuteSync()
-        {
-            Execute().Wait();
-        }
     }
 }
