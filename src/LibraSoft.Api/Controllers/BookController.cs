@@ -85,7 +85,7 @@ namespace LibraSoft.Api.Controllers
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Search = search,
-                Category = category,
+                Categories = category?.Split(",").Select(c => c.Trim()).ToList(),
             };
 
             string cacheKey = $"get-all-book-{Uri.EscapeDataString(search ?? string.Empty)}-{Uri.EscapeDataString(stringToEscape: category
@@ -214,6 +214,12 @@ namespace LibraSoft.Api.Controllers
             });
 
             return Ok(new Response<IEnumerable<BookRelatedResponse>?>(response));  
+        }
+
+        [HttpGet("/opa")]
+        public IActionResult GetOpa(string category)
+        {
+            return Ok(category.Split(",").Select(c => c.Trim()));
         }
     }
 }

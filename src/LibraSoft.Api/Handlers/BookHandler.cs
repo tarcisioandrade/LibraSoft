@@ -61,7 +61,6 @@ namespace LibraSoft.Api.Handlers
             if (request.Search is not null)
             {
                 var searchInBookTitle = query.Where(book => EF.Functions.ILike(book.Title, $"%{request.Search}%"));
-                var searchInBookAuthorName = query.Where(book => EF.Functions.ILike(book.Author.Name, $"%{request.Search}%"));
                 
                 if (searchInBookTitle.IsNullOrEmpty() is false)
                 {
@@ -69,14 +68,14 @@ namespace LibraSoft.Api.Handlers
                 } 
                 else
                 {
+                    var searchInBookAuthorName = query.Where(book => EF.Functions.ILike(book.Author.Name, $"%{request.Search}%"));
                     query = searchInBookAuthorName;
                 }
             }
 
-            if (request.Category is not null)
+            if (request.Categories is not null)
             {
-                var filterBookByCategory = query.Where(book => book.Categories.Any(c => EF.Functions.ILike(c.Title, $"%{request.Category}%")));
-                
+                var filterBookByCategory = query.Where(book => request.Categories.All(category => book.Categories.Any(bc => EF.Functions.ILike(bc.Title, "%" + category + "%"))));
                 query = filterBookByCategory;
             }
 
