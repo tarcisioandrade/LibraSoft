@@ -4,6 +4,7 @@ using LibraSoft.Api;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddDocumentation();
+builder.AddCrossOrigin();
 builder.AddConfiguration();
 builder.AddHangfire();
 builder.AddFilters();

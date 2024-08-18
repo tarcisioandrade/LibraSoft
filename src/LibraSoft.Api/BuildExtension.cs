@@ -20,6 +20,7 @@ namespace LibraSoft.Api
 {
     public static class BuildExtension
     {
+        static string CorsName = "LibraSoftCors";
         public static void AddDatabaseContext(this WebApplicationBuilder builder)
         {
             builder.Services.AddDbContext<AppDbContext>();
@@ -83,15 +84,16 @@ namespace LibraSoft.Api
 
         public static void AddCrossOrigin(this WebApplicationBuilder builder)
         {
-            builder.Services.AddCors(option =>
+            builder.Services.AddCors(options =>
             {
-                option.AddDefaultPolicy(builder =>
-                {
-                    builder.WithOrigins(["http://localhost:3000", "https://localhost:3000"]);
-                    builder.AllowAnyHeader();
-                    builder.AllowAnyMethod();
-                    builder.AllowCredentials();
-                });
+                options.AddPolicy(name: CorsName,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
+                          policy.AllowAnyHeader();
+                          policy.AllowAnyMethod();
+                          policy.AllowCredentials();
+                      });
             });
         }
 
@@ -119,6 +121,7 @@ namespace LibraSoft.Api
 
         public static void AddAuthAppConfiguration(this WebApplication app)
         {
+            app.UseCors(CorsName);
             app.UseAuthentication();
             app.UseAuthorization();
         }

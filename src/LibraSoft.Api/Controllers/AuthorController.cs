@@ -11,7 +11,6 @@ namespace LibraSoft.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("admin")]
     public class AuthorController : ControllerBase
     {
         private readonly IAuthorHandler _handler;
@@ -80,7 +79,7 @@ namespace LibraSoft.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(string? search,
