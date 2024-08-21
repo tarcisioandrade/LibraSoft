@@ -85,6 +85,11 @@ namespace LibraSoft.Core.Models
             Status = EStatus.Inactive;
         }
 
+        public void Active()
+        {
+            Status = EStatus.Active;
+        }
+
         public void SetAverage(double average)
         {
             AverageRating = average;

@@ -52,11 +52,18 @@ namespace LibraSoft.Api.Handlers
 
             List<Book>? books = [];
 
-            if (request.IncludeInactive is false)
+            if (request.Status == EBookStatusFilter.Active)
             {
                 query = query.Where(book => book.Status == EStatus.Active);
                 
             }
+
+            if (request.Status == EBookStatusFilter.Inactive)
+            {
+                query = query.Where(book => book.Status == EStatus.Inactive);
+
+            }
+
 
             if (request.Search is not null)
             {
@@ -152,6 +159,12 @@ namespace LibraSoft.Api.Handlers
         public async Task InactiveAsync(Book book)
         {
             book.Inactive();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ReactivatedAsync(Book book)
+        {
+            book.Active();
             await _context.SaveChangesAsync();
         }
 

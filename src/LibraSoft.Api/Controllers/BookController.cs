@@ -4,6 +4,7 @@ using LibraSoft.Core.Commons;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
+using LibraSoft.Core.Enums;
 using LibraSoft.Core.Requests.Book;
 using LibraSoft.Core.Responses.Author;
 using LibraSoft.Core.Responses.Book;
@@ -75,13 +76,13 @@ namespace LibraSoft.Api.Controllers
         [ProducesResponseType(typeof(PagedResponse<IEnumerable<BookResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(string? search,
                                                 string? category,
-                                                bool includeInactive = false,
+                                                EBookStatusFilter status = EBookStatusFilter.All,
                                                 int pageNumber = Configuration.DefaultPageNumber,
                                                 int pageSize = Configuration.DefaultPageSize)
         {
             var request = new GetAllBookRequest
             {
-                IncludeInactive = includeInactive,
+                Status = status,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 Search = search,
@@ -89,7 +90,7 @@ namespace LibraSoft.Api.Controllers
             };
 
             string cacheKey = $"get-all-book-{Uri.EscapeDataString(search ?? string.Empty)}-{Uri.EscapeDataString(stringToEscape: category
-                ?? string.Empty)}-{includeInactive}-{pageNumber}-{pageSize}";
+                ?? string.Empty)}-{status}-{pageNumber}-{pageSize}";
 
             var books = await _cache.GetOrCreateAsync(cacheKey, async () =>
             {
@@ -189,6 +190,25 @@ namespace LibraSoft.Api.Controllers
             return NoContent();
         }
 
+        [HttpPost("{id}/reactivate")]
+        [Authorize("admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Reactivate(Guid id)
+        {
+            var book = await _bookHandler.GetByIdAsync(id);
+
+            if (book is null)
+            {
+                return BadRequest(new BookNotFoundError(id));
+            }
+
+            await _bookHandler.ReactivatedAsync(book);
+
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+
+            return NoContent();
+        }
+
         [HttpGet("{id}/related")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(BookRelatedResponse), StatusCodes.Status200OK)]
@@ -216,10 +236,5 @@ namespace LibraSoft.Api.Controllers
             return Ok(new Response<IEnumerable<BookRelatedResponse>?>(response));  
         }
 
-        [HttpGet("/opa")]
-        public IActionResult GetOpa(string category)
-        {
-            return Ok(category.Split(",").Select(c => c.Trim()));
-        }
     }
 }
