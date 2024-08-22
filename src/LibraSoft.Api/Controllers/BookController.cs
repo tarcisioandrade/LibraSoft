@@ -236,5 +236,27 @@ namespace LibraSoft.Api.Controllers
             return Ok(new Response<IEnumerable<BookRelatedResponse>?>(response));  
         }
 
+        [HttpPut]
+        [Authorize("admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Update(UpdateBookRequest request)
+        {
+            var book = await _bookHandler.GetByIdAsync(request.Id);
+
+            if (book is null)
+            {
+                return BadRequest(new BookNotFoundError(request.Id));
+            }
+
+            var hasChanged = await _bookHandler.UpdateAsync(request, book);
+
+            if (hasChanged == true)
+            {
+                await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+
+            }
+
+            return NoContent();
+        }
     }
 }

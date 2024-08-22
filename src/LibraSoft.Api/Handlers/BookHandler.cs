@@ -9,6 +9,7 @@ using LibraSoft.Core.Responses.Category;
 using LibraSoft.Core.Responses.Author;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using LibraSoft.Core.Requests.User;
 
 namespace LibraSoft.Api.Handlers
 {
@@ -168,12 +169,105 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateBookRatingAsync(Book book)
+        public async Task<bool> UpdateAsync(UpdateBookRequest request, Book book)
+        {
+            var hasChanges = false;
+
+            if (book.Title != request.Title)
+            {
+                book.UpdateTitle(request.Title);
+                hasChanges = true;
+            }
+
+            if (book.Image != request.Image)
+            {
+                book.UpdateImage(request.Image);
+                hasChanges = true;
+            }
+
+            if (book.Publisher != request.Publisher)
+            {
+                book.UpdatePublisher(request.Publisher);
+                hasChanges = true;
+            }
+
+            if (book.PageCount != request.PageCount)
+            {
+                book.UpdatePageCount(request.PageCount);
+                hasChanges = true;
+            }
+
+            if (book.Sinopse != request.Sinopse)
+            {
+                book.UpdateSinopse(request.Sinopse);
+                hasChanges = true;
+            }
+
+            if (book.Language != request.Language)
+            {
+                book.UpdateLanguage(request.Language);
+                hasChanges = true;
+            }
+
+            if (book.PublicationAt != request.PublicationAt)
+            {
+                book.UpdatePublicationAt(request.PublicationAt);
+                hasChanges = true;
+            }
+
+            if (book.AuthorId != request.AuthorId)
+            {
+                book.UpdateAuthorId(request.AuthorId);
+                hasChanges = true;
+            }
+
+            if (book.CopiesAvailable != request.CopiesAvailable)
+            {
+                book.UpdateCopiesAvailable(request.CopiesAvailable);
+                hasChanges = true;
+            }
+
+            if (!book.Dimensions.Equals(request.Dimensions))
+            {
+                book.UpdateDimensions(request.Dimensions);
+                hasChanges = true;
+            }
+
+            if (book.CoverType != request.CoverType)
+            {
+                book.UpdateCoverType(request.CoverType);
+                hasChanges = true;
+            }
+
+            var categoryIds = request.Categories.Select(c => c.Id).ToList();
+            var categories = await _context.Categories
+                                           .Where(c => categoryIds.Contains(c.Id))
+                                           .ToListAsync();
+
+            if (!book.Categories.Select(c => c.Id).SequenceEqual(categoryIds))
+            {
+                book.UpdateCategories(categories);
+                hasChanges = true;
+            }
+
+
+            if (hasChanges)
+            {
+                book.Validate();
+                _context.Books.Update(book);
+                await _context.SaveChangesAsync();
+            }
+
+            return hasChanges;
+        }
+
+        public async Task UpdateRatingAsync(Book book)
         {
 
             var average = book.Reviews.Any() ? book.Reviews.Average(b => b.Rating) : 0;
             book.SetAverage(average);
             await _context.SaveChangesAsync();
         }
+
     }
 }

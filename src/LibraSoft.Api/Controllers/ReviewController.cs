@@ -47,7 +47,7 @@ namespace LibraSoft.Api.Controllers
 
             await _reviewHandler.CreateAsync(request, userId);
 
-            await _bookHandler.UpdateBookRatingAsync(book);
+            await _bookHandler.UpdateRatingAsync(book);
             await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
 
             return Created();

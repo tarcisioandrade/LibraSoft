@@ -60,6 +60,7 @@ namespace LibraSoft.Core.Models
 
             this.Validate();
         }
+
         public bool Equal(Guid id)
         {
             return Id.Equals(id);
@@ -93,6 +94,71 @@ namespace LibraSoft.Core.Models
         public void SetAverage(double average)
         {
             AverageRating = average;
+        }
+
+        public void UpdateTitle(string title)
+        {
+            Title = title;
+        }
+
+        public void UpdateImage(string image)
+        {
+            Image = image;
+        }
+
+        public void UpdatePublisher(string publisher)
+        {
+            Publisher = publisher;
+        }
+
+        public void UpdateIsbn(string isbn)
+        {
+            Isbn = isbn;
+        }
+
+        public void UpdatePageCount(int pageCount)
+        {
+            PageCount = pageCount;
+        }
+
+        public void UpdateSinopse(string sinopse)
+        {
+            Sinopse = sinopse;
+        }
+
+        public void UpdateLanguage(string language)
+        {
+            Language = language;
+        }
+
+        public void UpdatePublicationAt(DateTime publicationAt)
+        {
+            PublicationAt = publicationAt;
+        }
+
+        public void UpdateAuthorId(Guid authorId)
+        {
+            AuthorId = authorId;
+        }
+
+        public void UpdateCopiesAvailable(int copiesAvailable)
+        {
+            CopiesAvailable = copiesAvailable;
+        }
+
+        public void UpdateDimensions(Dimensions dimensions)
+        {
+            Dimensions = dimensions;
+        }
+
+        public void UpdateCoverType(ECoverType coverType)
+        {
+            CoverType = coverType;
+        }
+
+        public void UpdateCategories(IEnumerable<Category> categories)
+        {
+            Categories = categories;
         }
 
         public void Validate()
