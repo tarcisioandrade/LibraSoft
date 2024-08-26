@@ -12,7 +12,8 @@ namespace LibraSoft.Core.Interfaces
         public Task ReturnAsync(Rent rent);
         public Task CancelAsync(Rent rent);
         public Task ConfirmAsync(Rent rent);
-        public Task<PagedResponse<IEnumerable<RentResponse>?>> GetAllByUserIdAsync(GetAllRentRequest request, Guid id);
+        public Task<PagedResponse<IEnumerable<RentResponse>?>> GetAllByUserIdAsync(GetAllUserRentRequest request, Guid id);
         public Task<List<Rent>?> GetAllByUserEmailAsync(string email);
+        public Task<PagedResponse<IEnumerable<RentResponse>?>> GetAllAsync(GetAllRentRequest request);
     }
 }

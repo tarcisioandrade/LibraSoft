@@ -102,8 +102,6 @@ namespace LibraSoft.Api.Controllers
                     return BadRequest(new BookInactiveError());
                 }
 
-                book.DecreaseNumberOfCopies();
-
                 books.Add(book);
             }
 
@@ -122,15 +120,15 @@ namespace LibraSoft.Api.Controllers
             return NoContent();
         }
 
-        [HttpGet]
+        [HttpGet("user")]
         [Authorize]
         [ProducesResponseType(typeof(PagedResponse<IEnumerable<RentResponse>?>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll(EQueryRentStatus status = EQueryRentStatus.All,
-                                                int pageNumber = Configuration.DefaultPageNumber,
-                                                int pageSize = Configuration.DefaultPageSize)
+        public async Task<IActionResult> GetAllOfUser(EQueryRentStatus status = EQueryRentStatus.All,
+                                                      int pageNumber = Configuration.DefaultPageNumber,
+                                                      int pageSize = Configuration.DefaultPageSize)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var request = new GetAllRentRequest
+            var request = new GetAllUserRentRequest
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -164,7 +162,8 @@ namespace LibraSoft.Api.Controllers
                     Author = new AuthorInBookRent { Name = b.Author.Name },
                     AverageRating = b.AverageRating,
                     Publisher = b.Publisher
-                })
+                }),
+                User = new UserInRent { Id = rent.User.Id, Email = rent.User.Email, Name = rent.User.Name },
             });
             return Ok(response);
         }
@@ -192,6 +191,21 @@ namespace LibraSoft.Api.Controllers
             if (rent is null) return BadRequest(new RentNotFoundError(id));
             await _renthandler.ConfirmAsync(rent);
             return NoContent();
+        }
+
+        [HttpGet]
+        [Authorize("admin")]
+        [ProducesResponseType(typeof(Response<RentResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAll(ERentStatus? status,
+                                                string? search,
+                                                int pageNumber = Configuration.DefaultPageNumber,
+                                                int pageSize = Configuration.DefaultPageSize)
+        {
+            var request = new GetAllRentRequest { Status = status, SearchEmail = search, PageNumber = pageNumber, PageSize = pageSize };  
+            var rent = await _renthandler.GetAllAsync(request);
+
+            return Ok(rent);
         }
     }
 }

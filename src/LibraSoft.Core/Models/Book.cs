@@ -70,7 +70,12 @@ namespace LibraSoft.Core.Models
         {
             CopiesAvailable = CopiesAvailable - 1;
         }
-        
+
+        public void IncreaseNumberOfCopies()
+        {
+            CopiesAvailable = CopiesAvailable + 1;
+        }
+
         public bool HasCopiesAvaliable()
         {
             return CopiesAvailable > 0;

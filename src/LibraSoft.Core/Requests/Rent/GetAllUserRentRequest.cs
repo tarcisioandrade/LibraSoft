@@ -2,11 +2,11 @@
 
 namespace LibraSoft.Core.Requests.Rent
 {
-    public class GetAllRentRequest
+    public class GetAllUserRentRequest
     {
-        public ERentStatus? Status { get; set; }
-        public string? SearchEmail { get; set; }
+        public EQueryRentStatus? Status { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+       
     }
 }

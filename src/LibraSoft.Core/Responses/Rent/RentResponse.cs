@@ -10,6 +10,7 @@ namespace LibraSoft.Core.Responses.Rent
         public DateTime? ReturnedDate { get; set; }
         public ERentStatus Status { get; set; }
         public required IEnumerable<BookInRent> Books { get; set; }
+        public required UserInRent User { get; set; }
     }
 
     public class BookInRent
@@ -25,6 +26,13 @@ namespace LibraSoft.Core.Responses.Rent
 
     public class AuthorInBookRent
     {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class UserInRent
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
     }
 }

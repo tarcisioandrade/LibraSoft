@@ -65,7 +65,6 @@ namespace LibraSoft.Api.Handlers
 
             }
 
-
             if (request.Search is not null)
             {
                 var searchInBookTitle = query.Where(book => EF.Functions.ILike(book.Title, $"%{request.Search}%"));

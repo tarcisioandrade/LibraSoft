@@ -53,6 +53,15 @@ namespace LibraSoft.Core.Models
             this.Status = ERentStatus.Rent_Finished;
         }
 
+        public void SetReturnedDate(DateTime? returnedDate)
+        {
+            if (returnedDate is not null)
+            {
+                ReturnedDate = returnedDate;
+                return;
+            }
+            ReturnedDate = DateTime.UtcNow;
+        }
         public void SetCanceled()
         {
             this.Status = ERentStatus.Rent_Canceled;
