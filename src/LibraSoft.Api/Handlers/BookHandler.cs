@@ -4,12 +4,11 @@ using LibraSoft.Core.Enums;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.Book;
+using LibraSoft.Core.Responses.Author;
 using LibraSoft.Core.Responses.Book;
 using LibraSoft.Core.Responses.Category;
-using LibraSoft.Core.Responses.Author;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using LibraSoft.Core.Requests.User;
 
 namespace LibraSoft.Api.Handlers
 {
@@ -29,7 +28,7 @@ namespace LibraSoft.Api.Handlers
                                 publicationAt: request.PublicationAt,
                                 categories: categories,
                                 copiesAvailable: request.CopiesAvailable,
-                                authorId: request.AuthorId,
+                                authorId: author.Id,
                                 pageCount: request.PageCount,
                                 sinopse: request.Sinopse,
                                 coverType: request.CoverType,

@@ -1,5 +1,4 @@
-﻿
-using LibraSoft.Core.Enums;
+﻿using LibraSoft.Core.Enums;
 using LibraSoft.Core.ValueObjects;
 
 namespace LibraSoft.Core.Requests.Book
@@ -16,14 +15,18 @@ namespace LibraSoft.Core.Requests.Book
         public Dimensions Dimensions { get; set; } = new();
         public ECoverType CoverType { get; set; }
         public DateTime PublicationAt { get; set; }
-        public Guid AuthorId { get; set; }
+        public AuthorBookObject Author { get; set; } = new();
         public int CopiesAvailable { get; set; }
         public List<CategoryBookObject> Categories { get; set; } = [];
     }
 
     public class CategoryBookObject
     {
-        public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
+    }
+
+    public class AuthorBookObject
+    {
+        public string Name { get; set; } = string.Empty;
     }
 }

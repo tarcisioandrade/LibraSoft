@@ -18,6 +18,12 @@ namespace LibraSoft.Core.Requests.Book
         public DateTime PublicationAt { get; set; }
         public Guid AuthorId { get; set; }
         public int CopiesAvailable { get; set; }
-        public IEnumerable<CategoryBookObject> Categories { get; set; } = [];
+        public IEnumerable<CategoryInUpdateBook> Categories { get; set; } = [];
+
+        public class CategoryInUpdateBook
+        {
+            public Guid Id { get; set; }
+            public string Title { get; set; } = string.Empty;
+        }
     }
 }

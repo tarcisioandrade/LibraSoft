@@ -16,12 +16,12 @@ namespace LibraSoft.Api.Handlers
         {
             _context = appDbContext;
         }
-        public async Task CreateAsync(CreateCategoryRequest request)
+        public async Task<Category> CreateAsync(CreateCategoryRequest request)
         {
             var category = new Category(request.Title);
-
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
+            return category;
         }
 
         public async Task<List<CategoryResponse>?> GetAll()

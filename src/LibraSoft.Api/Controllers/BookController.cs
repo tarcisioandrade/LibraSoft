@@ -11,6 +11,8 @@ using LibraSoft.Core.Responses.Book;
 using LibraSoft.Core.Responses.Category;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LibraSoft.Core.Requests.Category;
+using LibraSoft.Core.Requests.Author;
 
 namespace LibraSoft.Api.Controllers
 {
@@ -41,20 +43,23 @@ namespace LibraSoft.Api.Controllers
 
             foreach (var categoryRequest in request.Categories)
             {
-                var category = await _categoryHandler.GetById(categoryRequest.Id);
+                var category = await _categoryHandler.GetByTitle(categoryRequest.Title);
 
                 if (category is null)
                 {
-                    return BadRequest(new CategoryNotFoundError(categoryRequest.Title));
+                    var newCategory = new CreateCategoryRequest { Title = categoryRequest.Title };
+                    category = await _categoryHandler.CreateAsync(newCategory);
                 }
+
                 categories.Add(category);
             }
 
-            var author = await _authorHandler.GetByIdAsync(request.AuthorId, asNoTracking: true);
+            var author = await _authorHandler.GetByNameAsync(request.Author.Name, asNoTracking: true);
 
             if (author is null)
             {
-                return BadRequest(new AuthorNotFoundError(request.AuthorId.ToString()));
+                var newAuthor = new CreateAuthorRequest { Name = request.Author.Name };
+                author = await _authorHandler.CreateAsync(newAuthor);
             }
 
             var existsBookWithSameIsbn = await _bookHandler.GetByIsbnAsync(request.Isbn, asNoTracking: true);

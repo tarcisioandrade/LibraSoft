@@ -19,11 +19,12 @@ namespace LibraSoft.Api.Handlers
             _context = context;
         }
 
-        public async Task CreateAsync(CreateAuthorRequest request)
+        public async Task<Author> CreateAsync(CreateAuthorRequest request)
         {
             var author = new Author(name: request.Name, biography: request.Biography, dateBirth: request.DateBirth);
             await _context.Authors.AddAsync(author);
             await _context.SaveChangesAsync();
+            return author;
         }
 
         public async Task DeleteAsync(Author author)
@@ -78,9 +79,16 @@ namespace LibraSoft.Api.Handlers
             return author;
         }
 
-        public async Task<Author?> GetByNameAsync(string name)
+        public async Task<Author?> GetByNameAsync(string name, bool asNoTracking = false)
         {
-            var author = await _context.Authors.Include(author => author.Books).FirstOrDefaultAsync(author => author.Name == name);
+            IQueryable<Author> query = _context.Authors;
+
+            if (asNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            var author = await query.Include(author => author.Books).FirstOrDefaultAsync(author => author.Name == name);
 
             return author;
         }
