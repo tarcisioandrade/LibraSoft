@@ -16,6 +16,6 @@ namespace LibraSoft.Core.Interfaces
         public Task ReactivatedAsync(Book book);
         public Task UpdateRatingAsync(Book book);
         public Task<List<Book>?> GetWithCategoriesAsync(Book book);
-        public Task<bool> UpdateAsync(UpdateBookRequest request, Book book);
+        public Task<bool> UpdateAsync(UpdateBookHandlerRequest request, Book book);
     }   
 }

@@ -167,7 +167,7 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateAsync(UpdateBookRequest request, Book book)
+        public async Task<bool> UpdateAsync(UpdateBookHandlerRequest request, Book book)
         {
             var hasChanges = false;
 
@@ -213,9 +213,10 @@ namespace LibraSoft.Api.Handlers
                 hasChanges = true;
             }
 
-            if (book.AuthorId != request.AuthorId)
+            if (book.AuthorId != request.Author.Id)
             {
-                book.UpdateAuthorId(request.AuthorId);
+
+                book.UpdateAuthorId(request.Author.Id);
                 hasChanges = true;
             }
 

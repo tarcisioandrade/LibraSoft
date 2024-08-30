@@ -3,7 +3,7 @@ using LibraSoft.Core.ValueObjects;
 
 namespace LibraSoft.Core.Requests.Book
 {
-    public class UpdateBookRequest
+    public class UpdateBookHandlerRequest
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
@@ -16,8 +16,8 @@ namespace LibraSoft.Core.Requests.Book
         public Dimensions Dimensions { get; set; } = new();
         public ECoverType CoverType { get; set; }
         public DateTime PublicationAt { get; set; }
-        public required AuthorBookObject Author { get; set; }
+        public required Models.Author Author { get; set; }
         public int CopiesAvailable { get; set; }
-        public IEnumerable<CategoryBookObject> Categories { get; set; } = [];
+        public List<Models.Category> Categories { get; set; } = [];
     }
 }

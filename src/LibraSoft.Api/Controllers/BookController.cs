@@ -253,7 +253,48 @@ namespace LibraSoft.Api.Controllers
                 return BadRequest(new BookNotFoundError(request.Id));
             }
 
-            var hasChanged = await _bookHandler.UpdateAsync(request, book);
+            var categories = new List<Category>();
+
+            foreach (var categoryRequest in request.Categories)
+            {
+                var category = await _categoryHandler.GetByTitle(categoryRequest.Title);
+
+                if (category is null)
+                {
+                    var newCategory = new CreateCategoryRequest { Title = categoryRequest.Title };
+                    category = await _categoryHandler.CreateAsync(newCategory);
+                }
+
+                categories.Add(category);
+            }
+
+            var author = await _authorHandler.GetByNameAsync(request.Author.Name, asNoTracking: true);
+
+            if (author is null)
+            {
+                var newAuthor = new CreateAuthorRequest { Name = request.Author.Name };
+                author = await _authorHandler.CreateAsync(newAuthor);
+            }
+
+            var handlerRequest = new UpdateBookHandlerRequest
+            {
+                Id = request.Id,
+                Author = author,
+                Categories = categories,
+                CopiesAvailable = request.CopiesAvailable,
+                CoverType = request.CoverType,
+                Dimensions = request.Dimensions,
+                Image = request.Image,
+                Isbn = request.Isbn,
+                Language = request.Language,
+                PageCount = request.PageCount,
+                PublicationAt = request.PublicationAt,
+                Publisher = request.Publisher,
+                Sinopse = request.Sinopse,
+                Title = request.Title,
+            };
+            
+            var hasChanged = await _bookHandler.UpdateAsync(handlerRequest, book);
 
             if (hasChanged == true)
             {
