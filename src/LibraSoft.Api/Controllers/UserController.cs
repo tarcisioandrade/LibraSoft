@@ -10,6 +10,8 @@ namespace LibraSoft.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class UserController : ControllerBase
     {
         private readonly IUserHandler _handler;
@@ -31,7 +33,6 @@ namespace LibraSoft.Api.Controllers
         [HttpGet]
         [Authorize]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -58,12 +59,17 @@ namespace LibraSoft.Api.Controllers
 
         [HttpPatch]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> Update(UserUpdateRequest req)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            await _handler.UpdateAsync(req, userId);
-            return NoContent();
+            var user = await _handler.GetByIdAsync(userId);
+            if (user is null)
+            {
+                return NotFound(new UserNotFoundError());
+            }
+            var response = await _handler.UpdateAsync(req, user);
+            return Ok(response);
         }
     }
 }

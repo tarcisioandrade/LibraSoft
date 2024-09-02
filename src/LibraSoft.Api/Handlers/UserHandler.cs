@@ -1,8 +1,10 @@
 ﻿using LibraSoft.Api.Database;
 using LibraSoft.Core.Enums;
+using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Models;
 using LibraSoft.Core.Requests.User;
+using LibraSoft.Core.Responses.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraSoft.Api.Handlers
@@ -62,10 +64,8 @@ namespace LibraSoft.Api.Handlers
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateAsync(UserUpdateRequest request, Guid id)
+        public async Task<UserResponse> UpdateAsync(UserUpdateRequest request, User user)
         {
-            var user = await this.GetByIdAsync(id);
-
             bool updated = false;
 
             var requestesProperties = typeof(UserUpdateRequest).GetProperties();
@@ -81,8 +81,17 @@ namespace LibraSoft.Api.Handlers
                     {
                         var currentValue = userProperty.GetValue(user);
 
-                        if (currentValue.Equals(newValue) is false)
+                        if (currentValue is null || currentValue.Equals(newValue) is false)
                         {
+
+                            if (property.Name == "Telephone")
+                            {
+                                var exists = await _context.Users.Where(u => u.Telephone == newValue.ToString()).AnyAsync();
+                                if (exists)
+                                {
+                                    throw new UserTelephoneAlreadyExists();
+                                }
+                            }
                             userProperty.SetValue(user, newValue);
                             updated = true;
                         }
@@ -96,8 +105,18 @@ namespace LibraSoft.Api.Handlers
             {
                 await _context.SaveChangesAsync();
             }
+            var response = new UserResponse
+            {
+                Id = user.Id,
+                Address = user.Address,
+                Email = user.Email,
+                Name = user.Name,
+                Role = user.Role,
+                Status = user.Status,
+                Telephone = user.Telephone,
+            };
 
-            return updated;
+            return response;
         }
     }
 }
