@@ -11,6 +11,7 @@ namespace LibraSoft.Core.Interfaces
         Task<User?> GetByEmailAsync(GetByEmailRequest request);
         Task<User?> GetByIdAsync(Guid id);
         Task<UserResponse> UpdateAsync(UserUpdateRequest request, User user);
+        Task ChangePasswordAsync(ChangePasswordRequest request, User user);
         Task InactiveAsync(Guid id);
     }
 }

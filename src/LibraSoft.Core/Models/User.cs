@@ -64,6 +64,11 @@ namespace LibraSoft.Core.Models
             this.Status = EUserStatus.Active;
         }
 
+        public void ChangePassword(string hash)
+        {
+            Password = hash;
+        }
+
         public void Validate()
         {
             var validator = new UserValidate();

@@ -19,6 +19,13 @@ namespace LibraSoft.Api.Handlers
             _context = appDbContext;
         }
 
+        public async Task ChangePasswordAsync(ChangePasswordRequest request, User user)
+        {
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            user.ChangePassword(passwordHash);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task CreateAsync(CreateUserRequest request, bool isAdmin = false)
         {
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);

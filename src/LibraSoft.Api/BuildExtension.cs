@@ -65,6 +65,9 @@ namespace LibraSoft.Api
             builder.Services.AddScoped<CheckReturnRentEvent>();
             builder.Services.AddScoped<CheckUserPunishmentStatus>();
             builder.Services.AddScoped<CheckPickingRentEvent>();
+
+            // Others Events
+            builder.Services.AddScoped<ChangePasswordAlertEvent>();
         }
 
         public static void AddDocumentation(this WebApplicationBuilder builder)

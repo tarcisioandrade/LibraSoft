@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using LibraSoft.Api.Events;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.User;
@@ -70,6 +71,30 @@ namespace LibraSoft.Api.Controllers
             }
             var response = await _handler.UpdateAsync(req, user);
             return Ok(response);
+        }
+
+        [HttpPatch("change-password")]
+        [Authorize]
+        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest req, ChangePasswordAlertEvent alertEvent)
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var user = await _handler.GetByIdAsync(userId);
+            if (user is null)
+            {
+                return NotFound(new UserNotFoundError());
+            }
+
+            var verifyPassword = BCrypt.Net.BCrypt.Verify(req.Password, user.Password);
+            if (!verifyPassword)
+            {
+                return BadRequest(new UserOrPasswordIncorrectError());
+            }
+
+            await _handler.ChangePasswordAsync(req, user);
+            alertEvent.Execute(user);
+
+            return NoContent();
         }
     }
 }
