@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
 using LibraSoft.Api.Events;
+using LibraSoft.Core.Commons;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.User;
+using LibraSoft.Core.Responses.Punishment;
 using LibraSoft.Core.Responses.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -75,7 +77,7 @@ namespace LibraSoft.Api.Controllers
 
         [HttpPatch("change-password")]
         [Authorize]
-        [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest req, ChangePasswordAlertEvent alertEvent)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -95,6 +97,28 @@ namespace LibraSoft.Api.Controllers
             alertEvent.Execute(user);
 
             return NoContent();
+        }
+
+        [HttpGet("punishments")]
+        [Authorize]
+        [ProducesResponseType(typeof(Response<List<PunishmentResponse>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllPunishments()
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var user = await _handler.GetByIdAsync(userId);
+            if (user is null)
+            {
+                return NotFound(new UserNotFoundError());
+            }
+
+            var response = user.PunishmentsDetails.Select(p => new PunishmentResponse
+            {
+                PunishInitDate = p.PunishInitDate,
+                PunishEndDate = p.PunishEndDate,
+                Status = p.Status
+            }).OrderByDescending(p => p.PunishInitDate).ToList();
+
+            return Ok(new Response<List<PunishmentResponse>>(response));
         }
     }
 }
