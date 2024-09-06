@@ -18,7 +18,7 @@ namespace LibraSoft.Api.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
@@ -34,7 +34,7 @@ namespace LibraSoft.Api.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
@@ -50,7 +50,7 @@ namespace LibraSoft.Api.Services
             var accessTokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims.ToArray()),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
