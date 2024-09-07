@@ -21,6 +21,7 @@ app.Services.AddHanfireEvents();
 if (app.Environment.IsDevelopment())
 {
     app.AddSwagger();
+    app.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();

@@ -12,6 +12,7 @@ using LibraSoft.Api.Services;
 using LibraSoft.Api.Services.EmailService;
 using LibraSoft.Core.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -149,6 +150,15 @@ namespace LibraSoft.Api
             RecurringJob.AddOrUpdate<CheckReturnRentEvent>("CheckReturnRentEvent", eventObj => eventObj.ExecuteSync(), Cron.Daily);
             RecurringJob.AddOrUpdate<CheckUserPunishmentStatus>("CheckUserPunishmentStatus", eventObj => eventObj.ExecuteSync(), Cron.Daily);
             RecurringJob.AddOrUpdate<CheckPickingRentEvent>("CheckPickingRentEvent", eventObj => eventObj.ExecuteSync(), "0 0 0,12 * * MON-FRI");
+        }
+
+        public static void ApplyMigrations(this IApplicationBuilder app)
+        {
+            Console.WriteLine(">>>>>>>>>>APLICANDO MIGRATIONS<<<<<<<<<<");
+            using IServiceScope scope = app.ApplicationServices.CreateScope();
+            using AppDbContext appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            appDbContext.Database.Migrate();
         }
     }
 }
