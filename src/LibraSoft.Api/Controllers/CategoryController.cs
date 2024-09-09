@@ -1,4 +1,5 @@
 ﻿using LibraSoft.Api.Constants;
+using LibraSoft.Core.Commons;
 using LibraSoft.Core.Exceptions;
 using LibraSoft.Core.Interfaces;
 using LibraSoft.Core.Requests.Category;
@@ -43,7 +44,7 @@ namespace LibraSoft.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Response<List<CategoryResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _cache.GetOrCreateAsync("get-all-category", async () =>
@@ -52,6 +53,7 @@ namespace LibraSoft.Api.Controllers
                 return categoriesFromDb;
             }, tag: CacheTagConstants.Category);
 
+            
             return Ok(categories);
         }
     }

@@ -5,6 +5,7 @@ using LibraSoft.Core.Enums;
 using LibraSoft.Core.Requests.Category;
 using LibraSoft.Core.Responses.Category;
 using Microsoft.EntityFrameworkCore;
+using LibraSoft.Core.Commons;
 
 namespace LibraSoft.Api.Handlers
 {
@@ -24,15 +25,15 @@ namespace LibraSoft.Api.Handlers
             return category;
         }
 
-        public async Task<List<CategoryResponse>?> GetAll()
+        public async Task<Response<List<CategoryResponse>>?> GetAll()
         {
             var categories = await _context.Categories.Include(c => c.Books).Where(c => c.Books.Any(b => b.Status == EStatus.Active)).AsNoTracking().ToListAsync();
 
-            var response = categories.Select(category => new CategoryResponse
+            var response = new Response<List<CategoryResponse>>(categories.Select(category => new CategoryResponse
             {
                 Id = category.Id,
                 Title = category.Title
-            }).ToList();
+            }).OrderBy(c => c.Title).ToList());
 
             return response;
         }

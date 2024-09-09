@@ -72,6 +72,7 @@ namespace LibraSoft.Api.Controllers
             await _bookHandler.CreateAsync(request, categories, author);
 
             await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
 
             return Created();
         }
@@ -172,6 +173,7 @@ namespace LibraSoft.Api.Controllers
             await _bookHandler.DeleteAsync(book);
 
             await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
 
             return NoContent();
         }
@@ -191,6 +193,7 @@ namespace LibraSoft.Api.Controllers
             await _bookHandler.InactiveAsync(book);
 
             await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
 
             return NoContent();
         }
@@ -210,6 +213,7 @@ namespace LibraSoft.Api.Controllers
             await _bookHandler.ReactivatedAsync(book);
 
             await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
 
             return NoContent();
         }
@@ -299,7 +303,7 @@ namespace LibraSoft.Api.Controllers
             if (hasChanged == true)
             {
                 await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
-
+                await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
             }
 
             return NoContent();
