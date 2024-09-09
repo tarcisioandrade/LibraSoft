@@ -32,6 +32,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Definir o ponto de entrada
-ENTRYPOINT ["dotnet", "LibraSoft.Api.dll"]
+# Initialize
+CMD ASPNETCORE_URLS="http://*:$PORT" dotnet LibraSoft.Api.dll
 

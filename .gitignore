@@ -362,9 +362,11 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# postgres data folder
+# Docker Volumes
 postgres-data
+webapp
 
 # Enviroments
 **/.env
 **/.env.*
+**/appsettings.Production.json

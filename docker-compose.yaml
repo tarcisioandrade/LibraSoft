@@ -26,6 +26,8 @@ services:
         condition: service_healthy
     ports:
       - "5000:5000"
+    volumes:
+      - ./webapp:/opt/webapp
     environment:
       ConnectionStrings__DefaultConnection: ${DB_STRING_CONNECTION}
       EmailSettings__Credentials__UserName: ${EMAIL_PROVIDER_USERNAME}
@@ -34,4 +36,4 @@ services:
       EmailSettings__Host: ${EMAIL_PROVIDER_HOST}
       EmailSettings__Port: ${EMAIL_PROVIDER_PORT}
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-      ASPNETCORE_URLS: ${ASPNETCORE_URLS}
+      PORT: ${PORT}
