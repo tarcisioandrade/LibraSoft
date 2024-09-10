@@ -103,6 +103,7 @@ namespace LibraSoft.Api.Handlers
                 CoverType = book.CoverType,
                 Dimensions = book.Dimensions,
                 Sinopse = book.Sinopse,
+                CreatedAt = book.CreatedAt,
                 ReviewsCount = book.Reviews.Count(),
                 Author = new AuthorResponse
                 {
@@ -114,7 +115,7 @@ namespace LibraSoft.Api.Handlers
                 },
                 Categories = book.Categories.Select(c => new CategoryResponse { Id = c.Id, Title = c.Title }),
                 Status = book.Status
-            });
+            }).OrderByDescending(b => b.CreatedAt);
 
             return new PagedResponse<IEnumerable<BookResponse>?>(data, count, request.PageNumber, request.PageSize);
         }

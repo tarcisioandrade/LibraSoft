@@ -24,6 +24,7 @@ namespace LibraSoft.Core.Responses.Book
         public IEnumerable<CategoryResponse> Categories { get; set; } = [];
         public required AuthorResponse Author { get; set; }
         public EStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
         
     }
 }

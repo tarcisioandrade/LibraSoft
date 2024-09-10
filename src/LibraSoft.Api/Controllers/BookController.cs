@@ -136,6 +136,7 @@ namespace LibraSoft.Api.Controllers
                 CoverType = bookInData.CoverType,
                 Dimensions = bookInData.Dimensions,
                 Sinopse = bookInData.Sinopse,
+                CreatedAt = bookInData.CreatedAt,
                 Author = new AuthorResponse
                 {
                     Id = bookInData.Author.Id,

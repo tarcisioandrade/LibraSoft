@@ -30,7 +30,7 @@ namespace LibraSoft.Core.Models.Validations
                 RuleFor(user => user.Address!.City).NotEmpty().WithMessage("City is required.");
                 RuleFor(user => user.Address!.State).NotEmpty().WithMessage("State is required.");
                 RuleFor(user => user.Address!.ZipCode).NotEmpty().WithMessage("ZipCode is required.").Matches(ZipCodeRegex).WithMessage("ZipCode must be a valid.");
-                RuleFor(user => user.Address!.Country).NotEmpty().WithMessage("Country is required.");
+                RuleFor(user => user.Address!.District).NotEmpty().WithMessage("District is required.");
             });
         }
     }

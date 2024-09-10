@@ -21,6 +21,7 @@ namespace LibraSoft.Core.Models
         public Dimensions Dimensions { get; private set; } = new();
         public ECoverType CoverType { get; private set; }
         public EStatus Status { get; private set; }
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public IEnumerable<Category> Categories { get; private set; } = new List<Category>();
         public IEnumerable<Rent> Rents { get; private set; } = new List<Rent>();
         public IEnumerable<Review> Reviews { get; private set; } = new List<Review>();
