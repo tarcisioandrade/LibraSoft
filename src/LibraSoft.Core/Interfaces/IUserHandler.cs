@@ -9,6 +9,7 @@ namespace LibraSoft.Core.Interfaces
         Task CreateAsync(CreateUserRequest request, bool isAdmin = false);
         Task DeleteAsync(DeleteUserRequest request);
         Task<User?> GetByEmailAsync(GetByEmailRequest request);
+        Task<User?> GetByEmailOrTelephoneAsync(string email, string telephone);
         Task<User?> GetByIdAsync(Guid id);
         Task<UserResponse> UpdateAsync(UserUpdateRequest request, User user);
         Task ChangePasswordAsync(ChangePasswordRequest request, User user);

@@ -56,6 +56,11 @@ namespace LibraSoft.Api.Handlers
             return user;
         }
 
+        public async Task<User?> GetByEmailOrTelephoneAsync(string email, string telephone)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email || u.Telephone == telephone);
+        }
+
         public async Task<User?> GetByIdAsync(Guid id)
         {
             var user = await _context.Users.Include(user => user.Rents.Where(r => r.Status != ERentStatus.Rent_Canceled && r.Status != ERentStatus.Rent_Finished)).ThenInclude(u => u.Books).FirstOrDefaultAsync(user => user.Id == id);

@@ -17,15 +17,18 @@ namespace LibraSoft.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Signup(CreateUserRequest req, IUserHandler handler)
         {
-            var request = new GetByEmailRequest { Email = req.Email };
+            var exists = await handler.GetByEmailOrTelephoneAsync(req.Email, req.Telephone);
 
-            var exists = await handler.GetByEmailAsync(request);
-            
-            if(exists is not null)
+            if(exists?.Email == req.Email)
             {
                 return BadRequest(new UserAlreadyExistsError());
             }
 
+            if (exists?.Telephone == req.Telephone)
+            {
+                return BadRequest(new UserTelephoneAlreadyExists());
+            }
+            
             await handler.CreateAsync(req);
 
             return Created();
