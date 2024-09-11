@@ -48,7 +48,10 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<PagedResponse<IEnumerable<BookResponse>?>> GetAllAsync(GetAllBookRequest request)
         {
-            IQueryable<Book> query = _context.Books.Include(book => book.Categories).Include(book => book.Author).Include(book => book.Reviews);
+            IQueryable<Book> query = _context.Books.Include(book => book.Categories)
+                .Include(book => book.Author)
+                .Include(book => book.Reviews)
+                .OrderByDescending(b => b.CreatedAt);
 
             List<Book>? books = [];
 
@@ -115,7 +118,7 @@ namespace LibraSoft.Api.Handlers
                 },
                 Categories = book.Categories.Select(c => new CategoryResponse { Id = c.Id, Title = c.Title }),
                 Status = book.Status
-            }).OrderByDescending(b => b.CreatedAt);
+            });
 
             return new PagedResponse<IEnumerable<BookResponse>?>(data, count, request.PageNumber, request.PageSize);
         }
