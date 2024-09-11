@@ -88,12 +88,21 @@ namespace LibraSoft.Api
 
         public static void AddCrossOrigin(this WebApplicationBuilder builder)
         {
+            string[] origins = { "http://localhost:3000", "https://localhost:3000" };
+            
+
+            if (builder.Environment.IsDevelopment() is false)
+            {
+                var clientUrl = builder.Configuration.GetSection("ClientUrl").Value!;
+                origins = [clientUrl];
+            }
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(name: CorsName,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
+                          policy.WithOrigins(origins);
                           policy.AllowAnyHeader();
                           policy.AllowAnyMethod();
                           policy.AllowCredentials();
