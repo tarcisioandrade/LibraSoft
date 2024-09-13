@@ -49,6 +49,7 @@ namespace LibraSoft.Api.Controllers
 
             await _bookHandler.UpdateRatingAsync(book);
             await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
 
             return Created();
         }
@@ -65,6 +66,7 @@ namespace LibraSoft.Api.Controllers
 
             await _reviewHandler.DeleteAsync(review);
             await _cache.InvalidateCacheAsync(CacheTagConstants.Review);
+            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
 
             return NoContent();
         }
