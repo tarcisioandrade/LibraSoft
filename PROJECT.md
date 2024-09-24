@@ -1,189 +1,115 @@
 ### Funcionalidades Principais
 
 1. **Gerenciamento de Livros**
-	- [x] **Adicionar/Editar/Remover Livros:** Capacidade de adicionar novos livros ao sistema, editar informaÁıes de livros existentes e remover livros.
-	- [x] **Listar Livros:** Visualizar uma lista de todos os livros disponÌveis na biblioteca.
-	- [x] **Busca e Filtros:** Permitir a busca por tÌtulos, autores, gÍneros, etc.
+	- **Adicionar/Editar/Remover Livros:** Capacidade de adicionar novos livros ao sistema, editar informa√ß√µes de livros existentes e remover livros.
+	- **Listar Livros:** Visualizar uma lista de todos os livros dispon√≠veis na biblioteca.
+	- **Busca e Filtros:** Permitir a busca por t√≠tulos, autores, categorias, etc.
 
-1. **Gerenciamento de Autores e Categorias**
-    - [x] **Autores:** Capacidade de adicionar, editar e remover informaÁıes de autores.
-    - [x] **Categorias:** Capacidade de gerenciar categorias de livros (ex.: FicÁ„o, N„o-FicÁ„o, CiÍncia, etc.)
+2. **Gerenciamento de Autores e Categorias**
+    - **Autores:** Capacidade de adicionar, editar e remover informa√ß√µes de autores.
+    - **Categorias:** Capacidade de gerenciar categorias de livros (ex.: Fic√ß√£o, N√£o-Fic√ß√£o, Ci√™ncia, etc.)
 
-2. **Gerenciamento de EmprÈstimos**
-    - [x]  **Registro de EmprÈstimos:** Registrar quando um livro È emprestado por um usu·rio.
-    - [x]  **DevoluÁ„o de Livros:** Registrar a devoluÁ„o dos livros.
-    - [x] **HistÛrico de EmprÈstimos:** Manter um histÛrico de todos os emprÈstimos realizados.
-    
-1. **Gerenciamento de Usu·rios**
-    - [x] **AutenticaÁ„o:** Sistema de login e logout para usu·rios.
-    - [x] **Cadastro de Usu·rios:** Capacidade de novos usu·rios se cadastrarem.
-    - [x] **Perfis de Usu·rios:** Visualizar e editar informaÁıes do perfil do usu·rio.
+3. **Gerenciamento de Empr√©stimos e Bolsa**
+    - **Registro de Empr√©stimos:** Registrar quando um livro √© emprestado por um usu√°rio.
+    - **Devolu√ß√£o de Livros:** Registrar a devolu√ß√£o dos livros.
+      **Hist√≥rico de Empr√©stimos:** Manter um hist√≥rico de todos os empr√©stimos realizados.
+   **Salvar/Remover livros na bolsa/sacola:** O usu√°rio pode salvar ou remover livros no qual tenha interesse em fazer um empr√©stimo na bolsa/sacola.
+    - **Cancelamento autom√°tico**: Caso o livro n√£o seja retirado em 24 horas, o pedido deve ser cancelado automaticamente.
 
-### Regras de NegÛcio
+4. **Gerenciamento de Usu√°rios**
+    - **Autentica√ß√£o:** Sistema de login e logout para usu√°rios.
+    - **Cadastro de Usu√°rios:** Capacidade de novos usu√°rios se cadastrarem.
+    - **Perfis de Usu√°rios:** Visualizar e editar informa√ß√µes do perfil do usu√°rio.
+
+5. **Avalia√ß√µes**
+    - **Adicionar:** O usu√°rio pode registrar uma avalia√ß√£o a um determinado livro.
+    - **Curtir**: O usu√°rio pode curtir a avalia√ß√£o de outro usu√°rio.
+
+6. **Puni√ß√µes**
+    - **Suspenso:** Caso o usu√°rio atrase a entrega de um livro uma puni√ß√£o deve ser aplicada impedindo que o usu√°rio efetue novos empr√©stimos por um tempo determinado.
+    - **Banimento:** Caso o us√°rio adquira 3 puni√ß√µes, este usu√°rio deve ser banido permanentemente.
+
+### Regras de Neg√≥cio
 
 #### Livros
 
 1. **Cadastro de Livros**
-    - Cada livro deve ter um tÌtulo, autor, categoria, ISBN, data de publicaÁ„o e n˙mero de cÛpias disponÌveis.
-    - O ISBN deve ser ˙nico para cada livro.
-    - O n˙mero de cÛpias disponÌveis n„o pode ser negativo.
+    - Cada livro deve ter um t√≠tulo, autor, categoria, ISBN, data de publica√ß√£o e n√∫mero de c√≥pias dispon√≠veis.
+    - O ISBN deve ser √∫nico para cada livro.
+    - O n√∫mero de c√≥pias dispon√≠veis n√£o pode ser negativo.
 
-1. **EdiÁ„o de Livros**
-    - Todas as informaÁıes de um livro podem ser editadas, exceto o ISBN.
-    - Ao alterar o n˙mero de cÛpias disponÌveis, deve-se ajustar o n˙mero de cÛpias em estoque considerando os emprÈstimos atuais.
+2. **Edi√ß√£o de Livros**
+    - Todas as informa√ß√µes de um livro podem ser editadas, exceto o ISBN.
+    - Ao alterar o n√∫mero de c√≥pias dispon√≠veis, deve-se ajustar o n√∫mero de c√≥pias em estoque considerando os empr√©stimos atuais.
 
-1. **RemoÁ„o de Livros**
-    - Um livro sÛ pode ser removido se n„o estiver associado a nenhum emprÈstimo ativo.
-    - Se um livro est· associado a emprÈstimos anteriores (histÛrico), ele pode ser marcado como "inativo" em vez de ser removido.
+3. **Remo√ß√£o de Livros**
+    - Um livro s√≥ pode ser removido se n√£o estiver associado a nenhum empr√©stimo ativo.
+    - Se um livro est√° associado a empr√©stimos anteriores (hist√≥rico), ele pode ser marcado como "inativo" em vez de ser removido.
 
-```json
-{
-	"id" : "1as-12-asa-12as",
-	"title":"",
-	"author": "",
-	"publisher": "",
-	"isbn": "21212122",
-	"publication_at": "",
-	"category": 0,
-	"copies_disponible": 50,
-	"status": "inative"
-}
-```
 #### Autores
 
 1. **Cadastro de Autores**
     - Cada autor deve ter um nome, e opcionalmente uma biografia e data de nascimento.
-    - O nome do autor deve ser ˙nico no sistema.
+    - O nome do autor deve ser √∫nico no sistema.
 
-1. **EdiÁ„o de Autores**
-    - As informaÁıes de um autor podem ser editadas livremente por um administrador.
+2. **Edi√ß√£o de Autores**
+    - As informa√ß√µes de um autor podem ser editadas livremente por um administrador.
 
-1. **RemoÁ„o de Autores**
-    - Um autor sÛ pode ser removido se n„o estiver associado a nenhum livro ativo.
-    - Se o autor est· associado a livros, ele pode ser desativado em vez de removido.
+3. **Remo√ß√£o de Autores**
+    - Um autor s√≥ pode ser removido se n√£o estiver associado a nenhum livro ativo.
+    - Se o autor est√° associado a livros, ele pode ser desativado em vez de removido.
 
-```json
-{
-	"id": "",
-	"name": "",
-	"biography": "",
-	"date_birth": "",
-	"status": "inactive"
-}
-```
 #### Categorias
 
 1. **Cadastro de Categorias**
-    - Cada categoria deve ter um nome ˙nico.
-    - As categorias ajudam na organizaÁ„o e filtragem dos livros.
+    - Cada categoria deve ter um nome √∫nico.
+    - As categorias ajudam na organiza√ß√£o e filtragem dos livros.
 
-1. **EdiÁ„o de Categorias**
+2. **Edi√ß√£o de Categorias**
     - O nome da categoria pode ser editado.
 
-1. **RemoÁ„o de Categorias**
-    - Uma categoria sÛ pode ser removida se n„o estiver associada a nenhum livro.
-    - Se a categoria est· associada a livros, os livros devem ser reclassificados antes de remover a categoria.
-```json
-{
-	"id": "",
-	"title": "",
-}
-```
-#### Usu·rios
+3. **Remo√ß√£o de Categorias**
+    - Uma categoria s√≥ pode ser removida se n√£o estiver associada a nenhum livro.
+    - Se a categoria est√° associada a livros, os livros devem ser reclassificados antes de remover a categoria.
 
-1. **Cadastro de Usu·rios**
-    - Cada usu·rio deve fornecer nome, email, senha e opcionalmente endereÁo e telefone.
-    - O email deve ser ˙nico no sistema.
-    - A senha deve atender aos critÈrios mÌnimos de seguranÁa (ex.: comprimento mÌnimo, complexidade).
+#### Usu√°rios
 
-1. **EdiÁ„o de Usu·rios**
-    - Os usu·rios podem editar suas informaÁıes pessoais.
-    - Os administradores podem alterar o status do usu·rio (ativo/inativo).
+1. **Cadastro de Usu√°rios**
+    - Cada usu√°rio deve fornecer nome, email, senha e opcionalmente endere√ßo e telefone.
+    - O email deve ser √∫nico no sistema.
+    - A senha deve atender aos crit√©rios m√≠nimos de seguran√ßa (ex.: comprimento m√≠nimo, complexidade).
 
-1. **AutenticaÁ„o**
-    - Os usu·rios devem autenticar-se com email e senha.
-    - Implementar mecanismos de recuperaÁ„o de senha e verificaÁ„o de email.
+2. **Edi√ß√£o de Usu√°rios**
+    - Os usu√°rios podem editar suas informa√ß√µes pessoais.
+    - Os administradores podem alterar o status do usu√°rio (ativo/inativo).
 
-```json
-{
-	"id": "",
-	"name": "",
-	"email": "",
-	"telephone": "",
-	"password": "",
-	"address": {
-		"city": "",
-		"street": "",
-		"state": "",
-		"country": "",
-		"zipcode": ""
-	},
-	"status": "",
-	"role": "",
-	"loans": ""
-}
-```
-#### EmprÈstimos
+3. **Autentica√ß√£o**
+    - Os usu√°rios devem autenticar-se com email e senha.
+    - Implementar mecanismos de recupera√ß√£o de senha e verifica√ß√£o de email.
 
-1. **Registro de EmprÈstimos**
-    - Um usu·rio pode emprestar um livro se houver cÛpias disponÌveis.
-    - Cada emprÈstimo deve ter uma data de inÌcio e uma data prevista de devoluÁ„o.
-    - O n˙mero de emprÈstimos ativos por usu·rio pode ser limitado (ex.: m·ximo de 5 livros emprestados simultaneamente).
+#### Empr√©stimos
 
-1. **DevoluÁ„o de Livros**
-    - Os usu·rios devem devolver os livros atÈ a data prevista de devoluÁ„o.
-    - Ao devolver um livro, o n˙mero de cÛpias disponÌveis È incrementado.
-    - Se o livro È devolvido apÛs a data prevista, pode ser aplicada uma multa.
+1. **Registro de Empr√©stimos**
+    - Um usu√°rio pode emprestar um livro se houver c√≥pias dispon√≠veis.
+    - Cada empr√©stimo deve ter uma data de in√≠cio e uma data prevista de devolu√ß√£o.
+    - O n√∫mero de empr√©stimos ativos por usu√°rio pode ser limitado (ex.: m√°ximo de 5 livros emprestados simultaneamente).
+    - Um usu√°rio s√≥ pode solicitar um empr√©stimo se n√£o houver nenhuma puni√ß√£o ativa.
 
-1. **RenovaÁ„o de EmprÈstimos**
-    - Os usu·rios podem renovar o emprÈstimo se o livro n„o estiver reservado por outro usu·rio.
-    - O n˙mero de renovaÁıes pode ser limitado (ex.: m·ximo de 2 renovaÁıes por emprÈstimo).
+2. **Devolu√ß√£o de Livros**
+    - Os usu√°rios devem devolver os livros at√© a data prevista de devolu√ß√£o.
+    - Ao devolver um livro, o n√∫mero de c√≥pias dispon√≠veis √© incrementado.
+    - Se o livro √© devolvido ap√≥s a data prevista, deve ser aplicada uma puni√ß√£o.
 
-1. **Reservas de Livros**
-    - Os usu·rios podem reservar livros que n„o est„o disponÌveis no momento.
-    - Quando uma cÛpia reservada È devolvida, o usu·rio que reservou o livro È notificado.
-    - As reservas devem ter uma validade apÛs a qual expiram se o livro n„o for retirado.
 
-```json
-{
-	"id": "",
-	"user_id": "",
-	"book_id": "",
-	"rent_date": "",
-	"return_date": "",
-	"status": "Returned" // Returned | Rental | Pending
- }
-```
 ### Relacionamentos Entre Entidades
 
-- **Livro-Autor:** Muitos para um (v·rios livros podem ter o mesmo autor).
-- **Livro-Categoria:** Muitos para um (v·rios livros podem pertencer ‡ mesma categoria).
-- **Livro-EmprÈstimo:** Muitos para muitos (um livro pode ser emprestado v·rias vezes, e um emprÈstimo pode incluir v·rios livros).
-- **Usu·rio-EmprÈstimo:** Um para muitos (um usu·rio pode ter v·rios emprÈstimos).
+- **Livro-Autor:** Muitos para um (v√°rios livros podem ter o mesmo autor).
+- **Livro-Categoria:** Muitos para um (v√°rios livros podem pertencer √† mesma categoria).
+- **Livro-Empr√©stimo:** Muitos para muitos (um livro pode ser emprestado v√°rias vezes, e um empr√©stimo pode incluir v√°rios livros).
+- **Usu√°rio-Empr√©stimo:** Um para muitos (um usu√°rio pode ter v√°rios empr√©stimos).
 
-### ConsideraÁıes Adicionais
+### Considera√ß√µes Adicionais
 
-- **Auditoria:** Mantenha um registro de todas as operaÁıes crÌticas, como criaÁ„o, ediÁ„o e remoÁ„o de entidades, para fins de auditoria.
-- **SeguranÁa:** Assegure que todas as operaÁıes sejam autorizadas, implementando um sistema de permissıes baseado em papÈis (admin, usu·rio comum).
-- **Performance:** Implemente caching e otimizaÁ„o de consultas para garantir que o sistema possa escalar conforme o n˙mero de usu·rios e livros cresce.
-
-### Endpoints da API
-
-1. **Livros**
-    - `GET /api/books` - Listar todos os livros
-    - `GET /api/books/{id}` - Obter detalhes de um livro especÌfico
-    - `POST /api/books` - Adicionar um novo livro
-    - `PUT /api/books/{id}` - Editar um livro existente
-    - `DELETE /api/books/{id}` - Remover um livro
-
-1. **Autores**
-    - `GET /api/authors` - Listar todos os autores
-    - `GET /api/authors/{id}` - Obter detalhes de um autor especÌfico
-    - `POST /api/authors` - Adicionar um novo autor
-    - `PUT /api/authors/{id}` - Editar um autor existente
-    - `DELETE /api/authors/{id}` - Remover um autor
-
-2. **EmprÈstimos**
-    - `GET /api/loans` - Listar todos os emprÈstimos
-    - `POST /api/loans` - Registrar um novo emprÈstimo
-    - `PUT /api/loans/{id}/return` - Registrar a devoluÁ„o de um livro
+- **Auditoria:** Mantenha um registro de todas as opera√ß√µes cr√≠ticas, como cria√ß√£o, edi√ß√£o e remo√ß√£o de entidades, para fins de auditoria.
+- **Seguran√ßa:** Assegure que todas as opera√ß√µes sejam autorizadas, implementando um sistema de permiss√µes baseado em pap√©is (admin, usu√°rio comum).
+- **Performance:** Implemente caching e otimiza√ß√£o de consultas para garantir que o sistema possa escalar conforme o n√∫mero de usu√°rios e livros cresce.
