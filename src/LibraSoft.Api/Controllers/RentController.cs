@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using LibraSoft.Api.Constants;
 using LibraSoft.Core;
 using LibraSoft.Core.Commons;
 using LibraSoft.Core.Enums;
@@ -21,12 +22,14 @@ namespace LibraSoft.Api.Controllers
         private readonly IRentHandler _renthandler;
         private readonly IBookHandler _bookhandler;
         private readonly IUserHandler _userhandler;
+        private readonly ICacheService _cache;
 
-        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler)
+        public RentController(IRentHandler rentHandler, IBookHandler bookHandler, IUserHandler userhandler, ICacheService cache)
         {
             _renthandler = rentHandler;
             _bookhandler = bookHandler;
             _userhandler = userhandler;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -125,15 +128,17 @@ namespace LibraSoft.Api.Controllers
                     break;
                 case ERentAction.Return:
                     await _renthandler.ReturnAsync(rent);
+                    await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
                     break;
                 case ERentAction.Confirm:
                     await _renthandler.ConfirmAsync(rent);
+                    await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
                     break;
 
                 default:
                     return BadRequest("Invalid action type.");
             }
-           
+
             return NoContent();
         }
 
