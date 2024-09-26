@@ -154,10 +154,10 @@ namespace LibraSoft.Api.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("{id}/delete")]
+        [HttpPost("{id}/{actionType}")]
         [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> ManageBook(Guid id, EBookAction actionType)
         {
             var book = await _bookHandler.GetByIdAsync(id);
 
@@ -166,52 +166,28 @@ namespace LibraSoft.Api.Controllers
                 return BadRequest(new BookNotFoundError(id));
             }
 
-            if (book.HasRent())
+            switch (actionType)
             {
-                return BadRequest(new BookHasRentAssociatedError(book.Title));
+                case EBookAction.Delete:
+                    if (book.HasRent())
+                    {
+                        return BadRequest(new BookHasRentAssociatedError(book.Title));
+                    }
+
+                    await _bookHandler.DeleteAsync(book);
+                    break;
+
+                case EBookAction.Inactive:
+                    await _bookHandler.InactiveAsync(book);
+                    break;
+
+                case EBookAction.Reactive:
+                    await _bookHandler.ReactivatedAsync(book);
+                    break;
+
+                default:
+                    return BadRequest("Invalid action type.");
             }
-
-            await _bookHandler.DeleteAsync(book);
-
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}/inactive")]
-        [Authorize("admin")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Inactive(Guid id)
-        {
-            var book = await _bookHandler.GetByIdAsync(id);
-
-            if (book is null)
-            {
-                return BadRequest(new BookNotFoundError(id));
-            }
-
-            await _bookHandler.InactiveAsync(book);
-
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
-            await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
-
-            return NoContent();
-        }
-
-        [HttpPost("{id}/reactivate")]
-        [Authorize("admin")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Reactivate(Guid id)
-        {
-            var book = await _bookHandler.GetByIdAsync(id);
-
-            if (book is null)
-            {
-                return BadRequest(new BookNotFoundError(id));
-            }
-
-            await _bookHandler.ReactivatedAsync(book);
 
             await _cache.InvalidateCacheAsync(CacheTagConstants.Book);
             await _cache.InvalidateCacheAsync(CacheTagConstants.Category);
