@@ -109,14 +109,31 @@ namespace LibraSoft.Api.Controllers
             return Created();
         }
 
-        [HttpPost("{id}/return")]
+        [HttpPost("{id}/{actionType}")]
         [Authorize("admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Return(Guid id)
+        public async Task<IActionResult> Return(Guid id, ERentAction actionType)
         {
             var rent = await _renthandler.GetByIdAsync(id);
             if (rent is null) return BadRequest(new RentNotFoundError(id));
-            await _renthandler.ReturnAsync(rent);
+
+            switch (actionType)
+            {
+                case ERentAction.Delete:
+                    if (rent.Status == ERentStatus.Rent_Canceled) return BadRequest(new RentAlreadyCanceled(id));
+                    await _renthandler.CancelAsync(rent);
+                    break;
+                case ERentAction.Return:
+                    await _renthandler.ReturnAsync(rent);
+                    break;
+                case ERentAction.Confirm:
+                    await _renthandler.ConfirmAsync(rent);
+                    break;
+
+                default:
+                    return BadRequest("Invalid action type.");
+            }
+           
             return NoContent();
         }
 
@@ -166,31 +183,6 @@ namespace LibraSoft.Api.Controllers
                 User = new UserInRent { Id = rent.User.Id, Email = rent.User.Email, Name = rent.User.Name },
             });
             return Ok(response);
-        }
-
-        [HttpDelete("{id}")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Cancel(Guid id)
-        {
-            var rent = await _renthandler.GetByIdAsync(id);
-            if (rent is null) return BadRequest(new RentNotFoundError(id));
-            if (rent.Status == ERentStatus.Rent_Canceled) return BadRequest(new RentAlreadyCanceled(id));
-            await _renthandler.CancelAsync(rent);
-            return NoContent();
-        }
-
-        [HttpPost("{id}/confirm")]
-        [Authorize("admin")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Confirm(Guid id)
-        {
-            var rent = await _renthandler.GetByIdAsync(id);
-            if (rent is null) return BadRequest(new RentNotFoundError(id));
-            await _renthandler.ConfirmAsync(rent);
-            return NoContent();
         }
 
         [HttpGet]
