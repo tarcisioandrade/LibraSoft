@@ -29,7 +29,7 @@ namespace LibraSoft.Api.Handlers
 
         public async Task<List<Bag>> GetAllAsync(Guid userId)
         {
-            var bags = await _context.Bags.Where(b => b.UserId == userId).Include(b => b.Book).AsNoTracking().ToListAsync();
+            var bags = await _context.Bags.Where(b => b.UserId == userId).Include(b => b.Book).ThenInclude(b => b.Author).AsNoTracking().ToListAsync();
             return bags;
         }
 

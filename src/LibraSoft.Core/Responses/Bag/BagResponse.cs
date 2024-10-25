@@ -15,6 +15,7 @@ namespace LibraSoft.Core.Responses.Bag
         public string Title { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public string Image { get; set; } = string.Empty;
+        public string AuthorName { get; set; } = string.Empty;
         public int CopiesAvaliable { get; set; }
         public double AverageRating { get; set; }
         public ECoverType CoverType { get; set; }

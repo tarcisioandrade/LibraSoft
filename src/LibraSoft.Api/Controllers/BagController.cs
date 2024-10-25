@@ -55,6 +55,7 @@ namespace LibraSoft.Api.Controllers
                         Title = b.Book.Title,
                         AverageRating = b.Book.AverageRating,
                         CopiesAvaliable = b.Book.CopiesAvailable,
+                        AuthorName = b.Book.Author.Name,
                         Image = b.Book.Image,
                         Publisher = b.Book.Publisher,
                         CoverType = b.Book.CoverType,
