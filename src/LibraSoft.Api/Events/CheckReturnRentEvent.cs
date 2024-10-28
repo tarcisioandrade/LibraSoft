@@ -29,8 +29,6 @@ namespace LibraSoft.Api.Events
                 var user = await _context.Users.Where(user => user.Status == EUserStatus.Active).FirstOrDefaultAsync(user => user.Id == rent.UserId);
                 var isToReturnBookInNextDay = IsReturnBookOnNextBusinessDay(rent.ExpectedReturnDate);
 
-                var teste = user?.PunishmentsDetails;
-
                 if (user == null) return;
 
                 if (isToReturnBookInNextDay)
@@ -51,6 +49,8 @@ namespace LibraSoft.Api.Events
 
                 if (IsReturnBookDatePassed(rent.ExpectedReturnDate))
                 {
+                    rent.SetExpired();
+
                     if (user.PunishmentsDetails.Count == 2)
                     {
                         EmailMessageRequest bannedEmailContent = new()
@@ -61,7 +61,7 @@ namespace LibraSoft.Api.Events
 
                         _emailSender.Send(user.Email, bannedEmailContent);
 
-                        var bannedPunishmentDetails = new PunishmentDetails { PunishInitDate = DateTime.UtcNow, PunishEndDate = DateTime.UtcNow.AddYears(9999) };
+                        var bannedPunishmentDetails = new PunishmentDetails { PunishInitDate = DateTime.UtcNow, PunishEndDate = DateTime.UtcNow.AddYears(100)};
                         user.Ban(bannedPunishmentDetails);
                     }
                     else
@@ -78,7 +78,6 @@ namespace LibraSoft.Api.Events
                         _emailSender.Send(user.Email, suspenseEmailContent);
 
                         user.Suspend(suspensePunishmentDetails);
-                        rent.SetInProgress();
                     }
                 }
             }
