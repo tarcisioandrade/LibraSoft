@@ -20,7 +20,8 @@ namespace LibraSoft.Api.Events
 
         public override async Task Execute()
         {
-            var rents = await _context.Rents.Where(rent => rent.Status != ERentStatus.Rent_Finished).ToListAsync();
+            var rents = await _context.Rents.Where(rent => rent.Status == ERentStatus.Rent_In_Progress).ToListAsync();
+            var isModify = false;
 
             if (rents.Count == 0) return;
 
@@ -44,12 +45,14 @@ namespace LibraSoft.Api.Events
                         _emailSender.Send(user.Email, emailContent);
 
                         rent.EmailAlerted();
+                        isModify = true;
                     }
                 }
 
                 if (IsReturnBookDatePassed(rent.ExpectedReturnDate))
                 {
                     rent.SetExpired();
+                    isModify = true;
 
                     if (user.PunishmentsDetails.Count == 2)
                     {
@@ -82,7 +85,10 @@ namespace LibraSoft.Api.Events
                 }
             }
 
-            await _context.SaveChangesAsync();
+            if (isModify)
+            {
+                await _context.SaveChangesAsync();
+            }
         }
 
         private static bool IsReturnBookOnNextBusinessDay(DateTime returnDate)
